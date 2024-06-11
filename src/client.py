@@ -47,8 +47,9 @@ class HamsterClient:
                     await self.upgrade()
 
                 to_sleep = random.randint(*cfg.sleep_time)
-                self.api.info(f"Going sleep {to_sleep} secs")
                 self.state.update(await self.api.synchronize())
+
+                self.api.info(f"Going sleep {to_sleep} secs")
                 await asyncio.sleep(to_sleep)
 
     async def do_taps(self, taps: int = 1, only_update: bool = False):
@@ -76,7 +77,7 @@ class HamsterClient:
                     and x["profitPerHour"]
                     and not x["isExpired"]
                     and not x.get("cooldownSeconds", 0)
-                    and x["price"] < 700000
+                    and x["price"] < 1_000_000
                 ),
                 result.data["upgradesForBuy"],
             )

@@ -146,6 +146,7 @@ class BuyUpgradeRequest(PostRequest):
             "timestamp": self.timestamp,
         }
 
+
 class DailyCipherRequest(PostRequest):
     path: str = "claim-daily-cipher"
     phrase: str

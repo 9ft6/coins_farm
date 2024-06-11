@@ -4,7 +4,9 @@
 </p>
 
 ## Introduction
+
 This application (bot) is designed to automatically manage multiple Telegram accounts for playing the popular game Hamster Kombat (https://hamsterkombat.io). To generate hourly income around the clock, the game requires user participation every three hours, which is impossible and turns a proud primate into a slave to a rodent. Justice will be restored by the unyielding silicon hand of justice, embodied in my bot.
+
 The bot takes authorized headers from the Telegram web app Hamster Combat, which can easily be obtained from a browser debugger. It doesn't matter if it's 1, 5, or 100 accounts. The bot uses asynchronous aiohttp requests and follows this algorithm: if the power is fully charged, it clicks; then it checks if it can buy a boost, and if available, it buys it and clicks again. After that, it finds the most profitable cards in the mining section, buys 5-6 of them, and goes to sleep for a random 2-5 minutes. The bot was created over a few beers and doesn't aim to be anything super special. Future plans include adding a Telegram bot to track account status and add/update new ones, as well as implementing combo purchases. Stay tuned!
 
 ## Using

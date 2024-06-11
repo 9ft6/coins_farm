@@ -30,7 +30,7 @@ def get_color_by_id(id: int):
 class CustomLogger:
     clients: list
     log_lines: list[str] = []
-    last_logs: dict[int, str] = {}
+    last_logs: dict[int, list[str]] = {}
 
     async def run(self, clients):
         self.clients = clients
@@ -47,12 +47,12 @@ class CustomLogger:
 
     def show(self):
         for client in self.clients:
-            message = self.last_logs.get(client.id, '')
-            line = self.get_line(
-                client.id,
-                f"{client}\nLast message: {message}\n"
-            )
-            print(line)
+            if logs := self.get_last_logs(client.id):
+                logs = '\n'.join(logs)
+                print(self.get_line(
+                    client.id,
+                    f"{client}\nLast logs:{logs}\n"
+                ))
 
         print()
 
@@ -61,7 +61,7 @@ class CustomLogger:
 
     def log(self, level, id, message):
         if level != "debug":
-            self.last_logs[id] = message
+            self.add_last_log(id, message)
 
         dt = datetime.now().strftime("%d.%m %H:%M:%S")
         color = get_color_by_level(level)
@@ -71,6 +71,18 @@ class CustomLogger:
 
     def get_line(self, id, message):
         return f"{get_color_by_id(id)}{message}{Style.RESET_ALL}"
+
+    def add_last_log(self, id, message):
+        if id in self.last_logs:
+            if len(self.last_logs[id]) > cfg.cui_show_last_msgs:
+                self.last_logs[id].pop(0)
+
+            self.last_logs[id].append(message)
+        else:
+            self.last_logs[id] = [message]
+
+    def get_last_logs(self, id):
+        return self.last_logs.get(id, [])
 
 
 logger = CustomLogger()

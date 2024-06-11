@@ -16,11 +16,12 @@ class Headers(dict):
 class MainConfig(BaseSettings):
     headers_file: Path = Path("../data/sessions")
     headers: dict[int, Headers] | None = None
-    upgrade_enable: bool = False
-    cui_last_logs: int = 40  # last logs line count in terminal
+    upgrade_enable: bool = True
+    cui_last_logs: int = 30  # last logs line count in terminal
     cui_refresh: int = 2  # secs
     sleep_time: tuple[int, int] = (100, 200)
     passphrase: str = ""
+    cui_show_last_msgs: int = 5
     # cycle_timeout: int = 10  # secs
 
     def __init__(self, **kwargs):
