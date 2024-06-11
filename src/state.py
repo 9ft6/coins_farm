@@ -2,7 +2,7 @@ import json
 
 from pydantic import BaseModel
 
-from api import Result
+from api.models import Result
 from models import User
 
 

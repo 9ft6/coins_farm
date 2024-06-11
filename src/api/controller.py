@@ -17,7 +17,7 @@ class APIController(LoggerMixin):
         return self.client.id
 
     async def synchronize(self) -> Result:
-        self.debug("Синхронизируемся")
+        self.debug("Synchronizing")
         response = await SyncRequest(self).do()
         if response.status < 300:
             return Ok(data=response.data)
@@ -25,7 +25,7 @@ class APIController(LoggerMixin):
             return Error(error=f"Bad status: {response.status}")
 
     async def me(self) -> Result:
-        self.info("Получаем юзера")
+        self.info("Get user information")
         response = await MeRequest(self).do()
         if response.status < 300:
             return Ok(data=response.data["telegramUser"])
@@ -33,7 +33,7 @@ class APIController(LoggerMixin):
             return Error(error=f"Bad status: {response.status}")
 
     async def tap(self, count: int, available: int) -> Result:
-        self.info(f"Тапаем {count} раз нахуй")
+        self.info(f"Tap {count} times")
         request = TapRequest(self, count=count, total=available)
         response = await request.do()
         if response.status < 300:
@@ -42,7 +42,7 @@ class APIController(LoggerMixin):
             return Error(error=f"Bad status: {response.status}")
 
     async def get_upgrades(self) -> Result:
-        self.debug(f"Получаем список доступных обновлений")
+        self.debug(f"Get upgrades list")
         request = GetUpgradesRequest(self)
         response = await request.do()
         if response.status < 300:
@@ -51,7 +51,7 @@ class APIController(LoggerMixin):
             return Error(error=f"Bad status: {response.status}")
 
     async def buy_upgrade(self, id: str) -> Result:
-        self.info(f"Покупаем {id}")
+        self.info(f"Buy {id}")
         request = BuyUpgradeRequest(self, id=id)
         response = await request.do()
         if response.status < 300:
@@ -60,7 +60,7 @@ class APIController(LoggerMixin):
             return Error(error=f"Bad status: {response.status}")
 
     async def claim_cipher(self, id: str) -> Result:
-        self.info(f"Покупаем {id}")
+        self.info(f"Enter Morse passphrase: {id}")
         request = BuyUpgradeRequest(self, id=id)
         response = await request.do()
         if response.status < 300:
@@ -69,7 +69,7 @@ class APIController(LoggerMixin):
             return Error(error=f"Bad status: {response.status}")
 
     async def has_boost(self):
-        self.info(f"Проверяем есть ли буст")
+        self.info(f"Check available boost")
         request = HasBoostRequest(self)
         response = await request.do()
         if response.status < 300:
@@ -83,7 +83,7 @@ class APIController(LoggerMixin):
         return Error(error="Cannot get boost with level")
 
     async def buy_boost(self):
-        self.info("покупаем буст")
+        self.info("Buy boost")
         request = BuyBoostRequest(self)
         response = await request.do()
         if response.status < 300:

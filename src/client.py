@@ -38,14 +38,12 @@ class HamsterClient:
             while True:
                 if taps_count := self.state.need_to_taps():
                     await self.do_taps(taps_count)
-                # else:
-                #     await self.do_taps(only_update=True)
 
                 if cfg.upgrade_enable:
                     await self.upgrade()
 
                 to_sleep = random.randint(*cfg.sleep_time)
-                self.api.info(f"Идем спать на {to_sleep} секс")
+                self.api.info(f"Going sleep {to_sleep} secs")
                 self.state.update(await self.api.synchronize())
                 await asyncio.sleep(to_sleep)
 
@@ -72,7 +70,6 @@ class HamsterClient:
                 lambda x: (
                     x["isAvailable"]
                     and x["profitPerHour"]
-                    # and not x["condition"]
                     and not x["isExpired"]
                     and not x.get("cooldownSeconds", 0)
                     and x["price"] < 700000
@@ -89,11 +86,6 @@ class HamsterClient:
             money = 0
             upgrades = sorted(upgrades, key=lambda x: x["ppp"], reverse=True)
             for upgrade in list(upgrades)[-4:]:
-                # print(f"выгодно: {upgrade}")
-                # if upgrade["price"] > 500000:
-                #     print("Не сейчас")
-                #     continue
-
                 if upgrade["price"] <= balance:
                     total += upgrade["profitPerHourDelta"]
                     money += upgrade["price"]
@@ -101,11 +93,6 @@ class HamsterClient:
                     result = await self.api.buy_upgrade(upgrade["id"])
                     self.state.update(result)
                     await asyncio.sleep(2)
-                    # break
-                # else:
-                #     print("нету денег. ахуел что ли! смотрим дальше")
-            #
-            # print(f"\n\n\n\n{total=}\n{money=}\n{balance=}\n\n\n\n")
 
     def client_line(self):
         return self.headers.__hash__()
