@@ -1,0 +1,92 @@
+import aiohttp
+
+
+from logger import LoggerMixin
+from api.requests import *
+from api.models import *
+
+
+class APIController(LoggerMixin):
+    session: aiohttp.ClientSession
+
+    def __init__(self, session, client):
+        self.session = session
+        self.client = client
+
+    def log_id(self):
+        return self.client.id
+
+    async def synchronize(self) -> Result:
+        self.debug("Синхронизируемся")
+        response = await SyncRequest(self).do()
+        if response.status < 300:
+            return Ok(data=response.data)
+        else:
+            return Error(error=f"Bad status: {response.status}")
+
+    async def me(self) -> Result:
+        self.info("Получаем юзера")
+        response = await MeRequest(self).do()
+        if response.status < 300:
+            return Ok(data=response.data["telegramUser"])
+        else:
+            return Error(error=f"Bad status: {response.status}")
+
+    async def tap(self, count: int, available: int) -> Result:
+        self.info(f"Тапаем {count} раз нахуй")
+        request = TapRequest(self, count=count, total=available)
+        response = await request.do()
+        if response.status < 300:
+            return Ok(data=response.data)
+        else:
+            return Error(error=f"Bad status: {response.status}")
+
+    async def get_upgrades(self) -> Result:
+        self.debug(f"Получаем список доступных обновлений")
+        request = GetUpgradesRequest(self)
+        response = await request.do()
+        if response.status < 300:
+            return Ok(data=response.data)
+        else:
+            return Error(error=f"Bad status: {response.status}")
+
+    async def buy_upgrade(self, id: str) -> Result:
+        self.info(f"Покупаем {id}")
+        request = BuyUpgradeRequest(self, id=id)
+        response = await request.do()
+        if response.status < 300:
+            return Ok(data=response.data)
+        else:
+            return Error(error=f"Bad status: {response.status}")
+
+    async def claim_cipher(self, id: str) -> Result:
+        self.info(f"Покупаем {id}")
+        request = BuyUpgradeRequest(self, id=id)
+        response = await request.do()
+        if response.status < 300:
+            return Ok(data=response.data)
+        else:
+            return Error(error=f"Bad status: {response.status}")
+
+    async def has_boost(self):
+        self.info(f"Проверяем есть ли буст")
+        request = HasBoostRequest(self)
+        response = await request.do()
+        if response.status < 300:
+            data = {x["id"]: x for x in response.data["boostsForBuy"]}
+            if boosts := data.get("BoostFullAvailableTaps"):
+                self.debug(f"boost: {boosts}")
+                not_max_level = boosts["level"] < boosts["maxLevel"]
+                if not_max_level and boosts["cooldownSeconds"] == 0:
+                    return Ok(data=boosts)
+
+        return Error(error="Cannot get boost with level")
+
+    async def buy_boost(self):
+        self.info("покупаем буст")
+        request = BuyBoostRequest(self)
+        response = await request.do()
+        if response.status < 300:
+            return Ok(data=response.data)
+        else:
+            return Error(error="Cannot get boost with level")
