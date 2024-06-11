@@ -35,6 +35,10 @@ class HamsterClient:
             await asyncio.sleep(random.randint(1, 100) / 100)
             self.state.update(await self.api.synchronize())
 
+            if cfg.passphrase:
+                await self.api.claim_cipher(cfg.passphrase)
+                # self.api.info(f"Passphrase result: {result}")
+
             while True:
                 if taps_count := self.state.need_to_taps():
                     await self.do_taps(taps_count)

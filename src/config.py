@@ -20,6 +20,7 @@ class MainConfig(BaseSettings):
     cui_last_logs: int = 40  # last logs line count in terminal
     cui_refresh: int = 2  # secs
     sleep_time: tuple[int, int] = (100, 200)
+    passphrase: str = ""
     # cycle_timeout: int = 10  # secs
 
     def __init__(self, **kwargs):

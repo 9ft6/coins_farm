@@ -28,6 +28,7 @@ sec-ch-ua-platform: "Linux"
 ```
 - if you have more accounts - put to sessions file and separate by new line
 - use # char to put comments
+- to enter morse passphrase just put in ```cfg.passphrase``` like this ```cfg.passphrase: str = "airdrop"``` and it will be automatically claimed
 
 ## TODO
 - Claim tasks and earns

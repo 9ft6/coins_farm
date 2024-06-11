@@ -148,11 +148,11 @@ class BuyUpgradeRequest(PostRequest):
 
 class DailyCipherRequest(PostRequest):
     path: str = "claim-daily-cipher"
-    cipher: str
+    phrase: str
 
     def payload(self):
         # Should by string word in upper case like {"cipher":"WEB3"}
-        return {"cipher": self.cipher}
+        return {"cipher": self.phrase.upper()}
 
 
 __all__ = [

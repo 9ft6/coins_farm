@@ -59,9 +59,9 @@ class APIController(LoggerMixin):
         else:
             return Error(error=f"Bad status: {response.status}")
 
-    async def claim_cipher(self, id: str) -> Result:
-        self.info(f"Enter Morse passphrase: {id}")
-        request = BuyUpgradeRequest(self, id=id)
+    async def claim_cipher(self, phrase: str) -> Result:
+        self.info(f"Enter Morse passphrase: {phrase}")
+        request = DailyCipherRequest(self, phrase=phrase)
         response = await request.do()
         if response.status < 300:
             return Ok(data=response.data)
