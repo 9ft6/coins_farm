@@ -1,6 +1,5 @@
 import aiohttp
 
-
 from logger import LoggerMixin
 from api.requests import *
 from api.models import *

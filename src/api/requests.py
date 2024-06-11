@@ -151,7 +151,6 @@ class DailyCipherRequest(PostRequest):
     phrase: str
 
     def payload(self):
-        # Should by string word in upper case like {"cipher":"WEB3"}
         return {"cipher": self.phrase.upper()}
 
 

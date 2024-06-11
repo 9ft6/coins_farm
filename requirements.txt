@@ -2,3 +2,4 @@ pydantic
 pydantic-settings
 Brotli
 aiohttp
+colorama

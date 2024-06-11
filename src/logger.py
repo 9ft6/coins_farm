@@ -2,8 +2,29 @@ from datetime import datetime
 from time import monotonic
 
 import asyncio
+from colorama import init, Fore, Style
 
 from config import cfg
+
+init()
+
+
+def get_color_by_level(level: str):
+    return {
+        "error": Fore.LIGHTRED_EX,
+        "debug": Fore.LIGHTBLUE_EX,
+        "warning": Fore.LIGHTYELLOW_EX,
+    }.get(level.lower(), Fore.WHITE)
+
+
+def get_color_by_id(id: int):
+    colors = [
+        Fore.GREEN, Fore.LIGHTYELLOW_EX, Fore.MAGENTA, Fore.LIGHTWHITE_EX,
+        Fore.LIGHTBLACK_EX, Fore.LIGHTRED_EX, Fore.LIGHTMAGENTA_EX,
+        Fore.LIGHTCYAN_EX, Fore.LIGHTBLUE_EX, Fore.LIGHTGREEN_EX,
+        Fore.RED, Fore.CYAN, Fore.YELLOW, Fore.WHITE, Fore.BLUE,
+    ]
+    return colors[id % len(colors)]
 
 
 class CustomLogger:
@@ -27,7 +48,11 @@ class CustomLogger:
     def show(self):
         for client in self.clients:
             message = self.last_logs.get(client.id, '')
-            print(f"{client}\nLast message: {message}\n")
+            line = self.get_line(
+                client.id,
+                f"{client}\nLast message: {message}\n"
+            )
+            print(line)
 
         print()
 
@@ -39,7 +64,13 @@ class CustomLogger:
             self.last_logs[id] = message
 
         dt = datetime.now().strftime("%d.%m %H:%M:%S")
-        self.log_lines.append(f'[{dt}] [{level:^6}] [{id:0>2}] {message}')
+        color = get_color_by_level(level)
+        line = self.get_line(id, f'[{id:0>2}] [{dt}] {color} '
+                                 f'[{level:^8}] {message}')
+        self.log_lines.append(line)
+
+    def get_line(self, id, message):
+        return f"{get_color_by_id(id)}{message}{Style.RESET_ALL}"
 
 
 logger = CustomLogger()
