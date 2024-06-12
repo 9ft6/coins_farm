@@ -86,11 +86,11 @@ To enter morse passphrase just put in ```cfg.passphrase``` like this ```cfg.pass
 
 ## TODO
 - Claim tasks and earns
-- update accounts management
 - Telegram bot
 - Stat to the bot
 - Adding accounts by bot
 
 ## Done
+- update accounts management
 - Console user interface
 - refactor api module 
