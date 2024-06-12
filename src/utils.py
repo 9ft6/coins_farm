@@ -1,8 +1,6 @@
 import platform
 import os
 
-from config import cfg
-
 
 def clear_screen():
     current_os = platform.system()
@@ -11,3 +9,15 @@ def clear_screen():
         os.system('cls')
     else:
         os.system('clear')
+
+
+def readable(num):
+    num = int(num)
+    if num >= 1_000_000_000:
+        return f'{num / 1_000_000_000:.3f}b'
+    elif num >= 1_000_000:
+        return f'{num / 1_000_000:.1f}m'
+    elif num >= 1_000:
+        return f'{int(num / 1_000)}k'
+    else:
+        return str(num)

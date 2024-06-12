@@ -46,18 +46,14 @@ class CustomLogger:
         print("\033[H\033[J", end="")
 
     def show(self):
+        lines = []
         for client in self.clients:
             if logs := self.get_last_logs(client.id):
                 logs = '\n'.join(logs)
-                print(self.get_line(
-                    client.id,
-                    f"{client}\n{logs}\n"
-                ))
-
-        print()
-
-        for line in self.log_lines[-cfg.cui_last_logs:]:
-            print(line)
+                lines.append(self.get_line(client.id, f"{client}\n{logs}\n"))
+        lines.append("")
+        lines.extend(self.log_lines[-cfg.cui_last_logs:])
+        print("\n".join(lines))
 
     def log(self, level, id, message):
         if level != "debug":

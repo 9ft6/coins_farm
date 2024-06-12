@@ -3,6 +3,7 @@ import random
 
 import aiohttp
 
+import utils
 from config import Headers, cfg
 from state import State
 from api import APIController
@@ -20,19 +21,21 @@ class HamsterClient:
         self.state = State()
 
     def __str__(self):
-        balance = int(self.state.balance())
+        balance_raw = int(self.state.balance())
         taps = self.state.taps_count()
         name = self.state.username()
-        cph = self.state.coins_per_hour()
-        cph_improved = self.state.stat["coins_per_hour"]
-        coins = int(balance - self.state.start_balance)
-        prefix = '+' if coins > 0 else ""
+        cph = utils.readable(self.state.coins_per_hour())
+        cph_improved = utils.readable(self.state.stat["coins_per_hour"])
+        coins_raw = balance_raw - self.state.start_balance
+        coins = utils.readable(coins_raw)
+        prefix = '+' if coins_raw > 0 else ""
         coins = f"({prefix} {coins})"
         upg_count = self.state.stat["upgrades"]
-        upg_price = self.state.stat["upgrades_price"]
+        upg_price = utils.readable(self.state.stat["upgrades_price"])
         upgrades = f"{upg_count} pcs. spent {upg_price} coins."
-        return (f"{self.id:0>2} {name:^15} {taps:<11} balance: {balance:>12} "
-                f"{coins:<15} {cph}/h (+ {cph_improved})\n"
+        balance = utils.readable(balance_raw)
+        return (f"{self.id:0>2} {name:^15} {taps:<11} balance: {balance:>8} "
+                f"{coins:<8} {cph}/h (+ {cph_improved})\n"
                 f"Last logs:                       upgrades bought {upgrades}")
 
     async def run_pipeline(self):
