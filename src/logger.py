@@ -51,7 +51,7 @@ class CustomLogger:
                 logs = '\n'.join(logs)
                 print(self.get_line(
                     client.id,
-                    f"{client}\nLast logs:{logs}\n"
+                    f"{client}\n{logs}\n"
                 ))
 
         print()

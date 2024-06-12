@@ -24,20 +24,32 @@ class HamsterClient:
         taps = self.state.taps_count()
         name = self.state.username()
         cph = self.state.coins_per_hour()
-        return (f"{self.id:0>2} - {name:^15} {taps:<11}"
-                f" coins: {balance:<12} {cph}/h")
+        cph_improved = self.state.stat["coins_per_hour"]
+        coins = int(balance - self.state.start_balance)
+        prefix = '+' if coins > 0 else ""
+        coins = f"{prefix} {coins}"
+        upg_count = self.state.stat["coins_per_hour"]
+        upg_price = self.state.stat["coins_per_hour"]
+        upgrades = f"{upg_count} pcs. spent {upg_price} coins."
+        return (f"{self.id:0>2} {name:^15} {taps:<11} balance: {balance:>12} "
+                f"({coins:<15}) {cph}/h (+{cph_improved})\n"
+                f"Last logs:                        upgrades bought {upgrades}")
 
     async def run_pipeline(self):
         async with aiohttp.ClientSession() as session:
             self.api = APIController(session, self)
 
-            self.state.set_user((await self.api.me()).data)
+            tg_user = (await self.api.me()).data
+            self.state.set_user(tg_user)
             await asyncio.sleep(random.randint(1, 100) / 100)
-            self.state.update(await self.api.synchronize())
+            sync_response = await self.api.synchronize()
+            balance = sync_response.data["clickerUser"]["balanceCoins"]
+            self.state.update(sync_response)
+            self.state.set_start_balance(balance)
 
             if cfg.passphrase:
                 await self.api.claim_cipher(cfg.passphrase)
-                # self.api.info(f"Passphrase result: {result}")
+                self.api.info(f"Passphrase entered: {cfg.passphrase}")
 
             while True:
                 if taps_count := self.state.need_to_taps():
@@ -95,7 +107,7 @@ class HamsterClient:
                     total += upgrade["profitPerHourDelta"]
                     money += upgrade["price"]
                     balance -= upgrade["price"]
-                    result = await self.api.buy_upgrade(upgrade["id"])
+                    result = await self.api.buy_upgrade(upgrade)
                     self.state.update(result)
                     await asyncio.sleep(2)
 

@@ -36,6 +36,7 @@ class APIController(LoggerMixin):
         request = TapRequest(self, count=count, total=available)
         response = await request.do()
         if response.status < 300:
+            self.client.state.stat_taps(count)
             return Ok(data=response.data)
         else:
             return Error(error=f"Bad status: {response.status}")
@@ -49,11 +50,14 @@ class APIController(LoggerMixin):
         else:
             return Error(error=f"Bad status: {response.status}")
 
-    async def buy_upgrade(self, id: str) -> Result:
+    async def buy_upgrade(self, upgrade: str) -> Result:
         self.info(f"Buy {id}")
-        request = BuyUpgradeRequest(self, id=id)
+        request = BuyUpgradeRequest(self, id=upgrade["id"])
         response = await request.do()
         if response.status < 300:
+            self.client.state.stat_upgrades()
+            self.client.state.stat_upgrades_price(upgrade["price"])
+            self.client.state.stat_coins_per_hour(upgrade["profitPerHourDelta"])
             return Ok(data=response.data)
         else:
             return Error(error=f"Bad status: {response.status}")
