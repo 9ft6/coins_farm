@@ -7,3 +7,7 @@ class User(BaseModel):
     is_bot: bool = Field(..., alias="isBot")
     last_name: str = Field(..., alias="lastName")
     lang: str = Field(..., alias="languageCode")
+
+
+class Upgrade(BaseModel):
+    ...

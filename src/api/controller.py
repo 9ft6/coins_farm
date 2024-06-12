@@ -50,8 +50,9 @@ class APIController(LoggerMixin):
         else:
             return Error(error=f"Bad status: {response.status}")
 
-    async def buy_upgrade(self, upgrade: str) -> Result:
-        self.info(f"Buy {id}")
+    async def buy_upgrade(self, upgrade: dict) -> Result:
+        self.info(f"Buy {upgrade['id']}")
+        print(upgrade)
         request = BuyUpgradeRequest(self, id=upgrade["id"])
 
         if (response := await request.do()) and response.status < 300:
