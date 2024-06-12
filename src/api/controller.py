@@ -60,7 +60,7 @@ class APIController(LoggerMixin):
             self.client.state.stat_coins_per_hour(upgrade["profitPerHourDelta"])
             return Ok(data=response.data)
         else:
-            return Error(error=f"Bad status: {response.status}")
+            return Error(error=f"Bad status: {response}")
 
     async def claim_cipher(self, phrase: str) -> Result:
         self.info(f"Enter Morse passphrase: {phrase}")
