@@ -32,8 +32,8 @@ class HamsterClient:
         upg_price = self.state.stat["upgrades_price"]
         upgrades = f"{upg_count} pcs. spent {upg_price} coins."
         return (f"{self.id:0>2} {name:^15} {taps:<11} balance: {balance:>12} "
-                f"{coins:<15} {cph}/h (+{cph_improved})\n"
-                f"Last logs:                        upgrades bought {upgrades}")
+                f"{coins:<15} {cph}/h (+ {cph_improved})\n"
+                f"Last logs:                       upgrades bought {upgrades}")
 
     async def run_pipeline(self):
         async with aiohttp.ClientSession() as session:
