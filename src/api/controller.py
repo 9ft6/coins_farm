@@ -53,8 +53,8 @@ class APIController(LoggerMixin):
     async def buy_upgrade(self, upgrade: str) -> Result:
         self.info(f"Buy {id}")
         request = BuyUpgradeRequest(self, id=upgrade["id"])
-        response = await request.do()
-        if response.status < 300:
+
+        if (response := await request.do()) and response.status < 300:
             self.client.state.stat_upgrades()
             self.client.state.stat_upgrades_price(upgrade["price"])
             self.client.state.stat_coins_per_hour(upgrade["profitPerHourDelta"])
