@@ -3,3 +3,4 @@ pydantic-settings
 Brotli
 aiohttp
 colorama
+fake-useragent

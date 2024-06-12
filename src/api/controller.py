@@ -1,5 +1,6 @@
 import aiohttp
 
+import utils
 from logger import LoggerMixin
 from api.requests import *
 from api.models import *
@@ -50,15 +51,18 @@ class APIController(LoggerMixin):
         else:
             return Error(error=f"Bad status: {response.status}")
 
-    async def buy_upgrade(self, upgrade: dict) -> Result:
-        self.info(f"Buy {upgrade['id']}")
-        print(upgrade)
-        request = BuyUpgradeRequest(self, id=upgrade["id"])
+    async def buy_upgrade(self, u: dict) -> Result:
+        price = utils.readable(u['price'])
+        cph = utils.readable(u['currentProfitPerHour'])
+        ung_info = f"{u['name']} {u['level']} lvl"
+        upg_price = f"{price} coins (+ {cph}/h)"
+        self.info(f"Buy {ung_info} for {upg_price}")
+        request = BuyUpgradeRequest(self, id=u["id"])
 
         if (response := await request.do()) and response.status < 300:
             self.client.state.stat_upgrades()
-            self.client.state.stat_upgrades_price(upgrade["price"])
-            self.client.state.stat_coins_per_hour(upgrade["profitPerHourDelta"])
+            self.client.state.stat_upgrades_price(u["price"])
+            self.client.state.stat_coins_per_hour(u["profitPerHourDelta"])
             return Ok(data=response.data)
         else:
             return Error(error=f"Bad status: {response}")

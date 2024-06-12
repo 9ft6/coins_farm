@@ -1,5 +1,6 @@
 from pathlib import Path
 from pydantic_settings import BaseSettings
+from fake_useragent import UserAgent
 
 
 class Headers(dict):
@@ -14,7 +15,7 @@ class Headers(dict):
 
 
 class MainConfig(BaseSettings):
-    headers_file: Path = Path("../data/sessions")
+    tokens_file: Path = Path("../data/tokens")
     headers: dict[int, Headers] | None = None
     upgrade_enable: bool = True
     cui_last_logs: int = 30  # last logs line count in terminal
@@ -26,55 +27,39 @@ class MainConfig(BaseSettings):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.headers = {n: h for n, h in enumerate(self._parse_headers())}
+        self.headers = {n: h for n, h in enumerate(self._generate_headers())}
         if not self.headers:
             print(f"Put headers to data/sessions. check readme")
 
-    def _parse_headers(self) -> set[Headers]:
+    def _generate_headers(self) -> set[Headers]:
         '''
-        reads sessions file and parses it into a set of unique Headers
+        reads tokens file and parses it into a set of unique Headers
         :return:
         '''
         result = set()
-        if self.headers_file.exists():
-            with self.headers_file.open() as f:
-                chunks = [x.strip() for x in f.read().split("\n\n")]
-                chunks = [x.split("\n") for x in chunks if x]
-                chunks = [[self._validate_line(y) for y in x] for x in chunks]
-                chunks = [[y.split(": ") for y in x if y] for x in chunks]
-
-                allowed = {
-                    "Accept",
-                    "Accept-Encoding",
-                    "Accept-Language",
-                    "Authorization",
-                    "Connection",
-                    # "Content-Length",
-                    "Content-Type",
-                    "Host",
-                    "Origin",
-                    "Referer",
-                    "Sec-Fetch-Dest",
-                    "Sec-Fetch-Mode",
-                    "Sec-Fetch-Site",
-                    "User-Agent",
-                }
-                for raw_headers in chunks:
-                    headers = {k: v for k, v in raw_headers if k in allowed}
-                    result.add(Headers(**headers))
+        if self.tokens_file.exists():
+            with self.tokens_file.open() as f:
+                lines = [l.strip() for l in f.readlines() if l.strip()]
+                tokens = [t for t in lines if not t.startswith("#")]
+                for token in tokens:
+                    result.add(Headers(**{
+                        "Accept": "*/*",
+                        "Accept-Encoding": "gzip, deflate, br, zstd",
+                        "Accept-Language": "en-US,en;q=0.9",
+                        "Authorization": f"Bearer {token}",
+                        "Connection": "keep-alive",
+                        "Host": "api.hamsterkombat.io",
+                        "Origin": "https://hamsterkombat.io",
+                        "Referer": "https://hamsterkombat.io/",
+                        "Sec-Fetch-Dest": "empty",
+                        "Sec-Fetch-Mode": "cors",
+                        "Sec-Fetch-Site": "same-site",
+                        "User-Agent": UserAgent().random,
+                    }))
+        else:
+            print("No tokens file found")
 
         return result
-
-    def _validate_line(self, l: str):
-        l = l.strip()
-        conditions = (
-            l,
-            not l.startswith("#"),
-            not l.startswith("POST"),
-            not l.startswith("GET"),
-        )
-        if all(conditions):
-            return l
 
 
 cfg = MainConfig()
