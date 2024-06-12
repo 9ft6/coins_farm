@@ -49,7 +49,7 @@ class HamsterClient:
                 to_sleep = random.randint(*cfg.sleep_time)
                 self.state.update(await self.api.synchronize())
 
-                self.api.info(f"Going sleep {to_sleep} secs")
+                self.api.debug(f"Going sleep {to_sleep} secs")
                 await asyncio.sleep(to_sleep)
 
     async def do_taps(self, taps: int = 1, only_update: bool = False):
