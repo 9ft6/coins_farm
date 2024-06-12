@@ -28,8 +28,8 @@ class HamsterClient:
         coins = int(balance - self.state.start_balance)
         prefix = '+' if coins > 0 else ""
         coins = f"{prefix} {coins}"
-        upg_count = self.state.stat["coins_per_hour"]
-        upg_price = self.state.stat["coins_per_hour"]
+        upg_count = self.state.stat["upgrades"]
+        upg_price = self.state.stat["upgrades_price"]
         upgrades = f"{upg_count} pcs. spent {upg_price} coins."
         return (f"{self.id:0>2} {name:^15} {taps:<11} balance: {balance:>12} "
                 f"({coins:<15}) {cph}/h (+{cph_improved})\n"
