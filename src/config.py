@@ -27,6 +27,8 @@ class MainConfig(BaseSettings):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.headers = {n: h for n, h in enumerate(self._parse_headers())}
+        if not self.headers:
+            print(f"Put headers to data/sessions. check readme")
 
     def _parse_headers(self) -> set[Headers]:
         '''
