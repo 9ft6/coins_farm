@@ -13,11 +13,17 @@ def clear_screen():
 
 def readable(num):
     num = int(num)
-    if num >= 1_000_000_000:
-        return f'{num / 1_000_000_000:.3f}b'
-    elif num >= 1_000_000:
-        return f'{num / 1_000_000:.1f}m'
-    elif num >= 1_000:
-        return f'{int(num / 1_000)}k'
+
+    if abs(num) >= 1_000_000_000:
+        result = f'{num / 1_000_000_000:.3f}b'
+    elif abs(num) >= 1_000_000:
+        result = f'{num / 1_000_000:.1f}m'
+    elif abs(num) >= 1_000:
+        result = f'{int(num / 1_000)}k'
     else:
-        return str(num)
+        result = str(num)
+
+    if result.startswith('-'):
+        result = result.replace("-", "- ")
+
+    return result
