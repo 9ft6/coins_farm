@@ -152,7 +152,8 @@ class HamsterClient:
 
     async def buy_upgrade(self, upgrade: dict):
         result = await self.api.buy_upgrade(upgrade)
-        self.state.update(result)
+        if result.success:
+            self.state.update(result)
         return result.success
 
     def client_line(self):
