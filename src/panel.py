@@ -1,3 +1,5 @@
+import platform
+
 from sshkeyboard import listen_keyboard_manual
 
 from config import cfg
@@ -30,7 +32,11 @@ class ConsoleControlPanel:
         self.logger.show()
 
     def update_logger_line(self):
-        state = lambda s: "(🟢)" if s else "(🔴)"
+        if any(platform.win32_ver()):
+            state = lambda s: "(+)" if s else "(-)"
+        else:
+            state = lambda s: "🟢" if s else "🔴"
+
         self.logger.set_panel_line(
             f"Control Panel     "
             f"| Combo (F3) "
