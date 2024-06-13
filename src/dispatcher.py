@@ -14,5 +14,5 @@ class HamsterDispatcher:
         clients = [HamsterClient(n, h) for n, h in cfg.headers.items()]
         tasks = [c.run_pipeline() for c in clients]
         tasks.append(logger.run(clients))
-        # tasks.append(ConsoleControlPanel(logger).run())
+        tasks.append(ConsoleControlPanel(logger).run())
         await asyncio.gather(*tasks)

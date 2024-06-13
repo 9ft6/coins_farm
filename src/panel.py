@@ -1,9 +1,4 @@
-import asyncio
-
-try:
-    from pynput import keyboard
-except:
-    keyboard = None
+from sshkeyboard import listen_keyboard_manual
 
 from config import cfg
 
@@ -11,26 +6,25 @@ from config import cfg
 class ConsoleControlPanel:
     def __init__(self, logger):
         self.logger = logger
+        self.update_logger_line()
 
     async def run(self):
-        self.update_logger_line()
-        keyboard.Listener(on_press=self.on_press).start()
-        await asyncio.sleep(0.01)
+        await listen_keyboard_manual(on_release=self.on_press)
 
     @staticmethod
     def on_press(key):
         match key:
-            case keyboard.Key.f3:
+            case "f3":
                 print('EnterCombo')
-            case keyboard.Key.f4:
+            case "f4":
                 print('PassPhrase')
-            case keyboard.Key.f5:
+            case "f5":
                 print('Sync')
-            case keyboard.Key.f6:
+            case "f6":
                 print('Tasks')
-            case keyboard.Key.f7:
+            case "f7":
                 print('Upgrades')
-            case keyboard.Key.f8:
+            case "f8":
                 print('Depends')
 
     def update_logger_line(self):
