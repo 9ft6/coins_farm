@@ -9,9 +9,10 @@
 - Task completion
 - Dependency upgrade
 - Card mining
+- Console control panel
+- Console passphrase entering
 
 **Soon:**
-- Console control panel
 - Combo purchases
 - Telegram control bot
 - Account management
@@ -35,6 +36,33 @@ Here’s how the bot operates:
 - The bot then completes tasks from the "Earn" section, upgrades all dependencies.
 - After that, it identifies the most profitable cards in the "Mining" section, buying 5-6 of them. 
 - Finally, it goes into sleep mode for a random period of 2-5 minutes.
+
+Here's the translation into English with Markdown formatting:
+
+---
+
+## Account Management
+
+In the console, the top line is occupied by the control panel, which can be used to manage the configuration.
+
+*Below is a list of commands with a brief description:*
+
+- **F3**: Enter `Combo`. !coming-soon!
+
+- **F4**: Enter a `PassPhrase` to all accounts.
+
+- **F5**: `Synchronize` and run pipelines for all clients.
+
+- **F6**: Toggle `task` execution on and off.*
+
+- **F7**: Enable or disable `upgrades`.*
+
+- **F8**: Toggle `dependency` upgrades.*
+
+* Need restart or wait client waking up.
+---
+
+If you need any further modifications or have specific requirements, please let me know!
 
 ## Prerequisites
 Before you begin, ensure you have met the following requirements:
@@ -108,9 +136,6 @@ make run
 ```
 
 This command activates the virtual environment and runs the main.py script located in the src directory.
-
-## Morse
-To enter morse passphrase just put in ```cfg.passphrase``` like this ```cfg.passphrase: str = "airdrop"``` and it will be automatically claimed
 
 ## TODO
 - Telegram bot

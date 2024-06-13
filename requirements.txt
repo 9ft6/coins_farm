@@ -5,3 +5,4 @@ aiohttp
 colorama
 fake-useragent
 sshkeyboard
+aioconsole

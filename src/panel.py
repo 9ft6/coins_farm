@@ -1,5 +1,4 @@
 import asyncio
-import platform
 
 from sshkeyboard import listen_keyboard_manual
 
@@ -20,7 +19,12 @@ class ConsoleControlPanel:
             case "f3":
                 print('EnterCombo')
             case "f4":
-                print('PassPhrase')
+                # To prevent the screen from updating while entering
+                # data from the keyboard, we handle this through a
+                # logger class that controls stdin and stdout.
+                passphrase = await logger.input('Enter passphrase:')
+                tasks = [c.enter_passphrase(passphrase) for c in self.clients]
+                await asyncio.gather(*tasks)
             case "f5":
                 await asyncio.gather(*[c.run_pipeline() for c in self.clients])
             case "f6":

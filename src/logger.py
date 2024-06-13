@@ -1,7 +1,8 @@
+import asyncio
 from datetime import datetime
 from time import monotonic
 
-import asyncio
+import aioconsole
 from colorama import init, Fore, Style
 
 from config import cfg
@@ -32,15 +33,27 @@ class CustomLogger:
     log_lines: list[str] = []
     last_logs: dict[int, list[str]] = {}
     panel_line: str = ""
+    stop_showing: bool = True
 
     async def run(self, clients):
         self.clients = clients
 
         while True:
             t0 = monotonic()
-            self.show()
+
+            if self.stop_showing:
+                self.show()
+
             if (to_sleep := cfg.cui_refresh - (monotonic() - t0)) > 0:
                 await asyncio.sleep(to_sleep)
+
+    async def input(self, text):
+        self.stop_showing = False
+        self.clear()
+        string = await aioconsole.ainput(f"    {text} ")
+        self.stop_showing = True
+        self.show()
+        return string
 
     def clear(self):
         print("\033[H\033[J", end="")

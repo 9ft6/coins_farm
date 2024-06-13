@@ -44,10 +44,6 @@ class HamsterClient:
             self.api = APIController(session, self)
             await self.synchronize_all()
 
-            if cfg.passphrase:
-                await self.api.claim_cipher(cfg.passphrase)
-                self.api.info(f"Passphrase entered: {cfg.passphrase}")
-
             while True:
                 await self.run_pipeline()
 
@@ -165,3 +161,6 @@ class HamsterClient:
 
     def client_line(self):
         return self.headers.__hash__()
+
+    async def enter_passphrase(self, passphrase: str):
+        return await self.api.claim_cipher(passphrase)
