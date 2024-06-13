@@ -31,6 +31,7 @@ class CustomLogger:
     clients: list
     log_lines: list[str] = []
     last_logs: dict[int, list[str]] = {}
+    panel_line: str = ""
 
     async def run(self, clients):
         self.clients = clients
@@ -46,7 +47,7 @@ class CustomLogger:
         print("\033[H\033[J", end="")
 
     def show(self):
-        lines = []
+        lines = [self.panel_line]
         for client in self.clients:
             if logs := self.get_last_logs(client.id):
                 logs = '\n'.join(logs)
@@ -64,6 +65,9 @@ class CustomLogger:
         line = self.get_line(id, f'[{id:0>2}] [{dt}] {color} '
                                  f'[{level:^8}] {message}')
         self.log_lines.append(line)
+
+    def set_panel_line(self, line):
+        self.panel_line = line
 
     def get_line(self, id, message):
         return f"{get_color_by_id(id)}{message}{Style.RESET_ALL}"

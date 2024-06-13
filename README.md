@@ -11,6 +11,7 @@
 - Card mining
 
 **Soon:**
+- Console control panel
 - Combo purchases
 - Telegram control bot
 - Account management

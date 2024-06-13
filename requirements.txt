@@ -4,3 +4,4 @@ Brotli
 aiohttp
 colorama
 fake-useragent
+pynput
