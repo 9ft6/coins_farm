@@ -3,6 +3,10 @@
   <img src="https://github.com/9ft6/hamster_farm/raw/media/pics/cui.png" alt="User Interface">
 </p>
 
+## Disclaimer
+
+Please, if you are interested in the development of this project, let me know. Also, any feedback you provide will influence the continuation of this project. Don't hesitate to ask me any questions here or on my [Telegram](https://t.me/dev9ft6). 
+
 **Done:**
 - Console interface
 - Boost purchase
@@ -16,7 +20,6 @@
 - Combo purchases
 - Telegram control bot
 - Account management
-- Status monitoring
 
 ---
 
@@ -135,15 +138,4 @@ To run the farm, use the following command:
 make run
 ```
 
-This command activates the virtual environment and runs the main.py script located in the src directory.
-
-## TODO
-- Telegram bot
-- Stat to the bot
-- Adding accounts by bot
-
-Done
-- Auto tasks
-- update accounts management
-- Console user interface
-- refactor api module 
+This command activates the virtual environment and runs application.
