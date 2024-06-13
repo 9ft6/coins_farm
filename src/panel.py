@@ -31,10 +31,10 @@ class ConsoleControlPanel:
         state = lambda s: "(+)" if s else "(-)"
         self.logger.set_panel_line(
             f"Control Panel     "
-            f"|    Combo (F3)   "
+            f"| Combo (F3) "
             f"| PassPhrase (F4) "
-            f"|    Sync (F5)    "
-            f"| {state(cfg.upgrade_enable)} Tasks (F6)    "
+            f"| Sync (F5) "
+            f"| {state(cfg.upgrade_enable)} Tasks (F6) "
             f"| {state(cfg.upgrade_enable)} Upgrades (F7) "
-            f"| {state(cfg.upgrade_depends)} Depends (F8) "
+            f"| {state(cfg.upgrade_depends)} Depends (F8) |"
         )
