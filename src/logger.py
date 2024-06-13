@@ -38,7 +38,6 @@ class CustomLogger:
 
         while True:
             t0 = monotonic()
-            self.clear()
             self.show()
             if (to_sleep := cfg.cui_refresh - (monotonic() - t0)) > 0:
                 await asyncio.sleep(to_sleep)
@@ -47,6 +46,7 @@ class CustomLogger:
         print("\033[H\033[J", end="")
 
     def show(self):
+        self.clear()
         lines = []
         if self.panel_line:
             lines.append(self.panel_line)

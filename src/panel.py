@@ -9,10 +9,9 @@ class ConsoleControlPanel:
         self.update_logger_line()
 
     async def run(self):
-        await listen_keyboard_manual(on_release=self.on_press)
+        await listen_keyboard_manual(on_release=lambda k: self.on_press(k))
 
-    @staticmethod
-    def on_press(key):
+    def on_press(self, key):
         match key:
             case "f3":
                 print('EnterCombo')
@@ -21,20 +20,23 @@ class ConsoleControlPanel:
             case "f5":
                 print('Sync')
             case "f6":
-                print('Tasks')
+                cfg.do_tasks = not cfg.do_tasks
             case "f7":
-                print('Upgrades')
+                cfg.upgrade_enable = not cfg.upgrade_enable
             case "f8":
-                print('Depends')
+                cfg.upgrade_depends = not cfg.upgrade_depends
+
+        self.update_logger_line()
+        self.logger.show()
 
     def update_logger_line(self):
-        state = lambda s: "(+)" if s else "(-)"
+        state = lambda s: "(🟢)" if s else "(🔴)"
         self.logger.set_panel_line(
             f"Control Panel     "
             f"| Combo (F3) "
             f"| PassPhrase (F4) "
             f"| Sync (F5) "
-            f"| {state(cfg.upgrade_enable)} Tasks (F6) "
+            f"| {state(cfg.do_tasks)} Tasks (F6) "
             f"| {state(cfg.upgrade_enable)} Upgrades (F7) "
             f"| {state(cfg.upgrade_depends)} Depends (F8) |"
         )
