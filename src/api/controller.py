@@ -18,24 +18,24 @@ class APIController(LoggerMixin):
 
     async def synchronize(self) -> Result:
         self.debug("Synchronizing")
-        request = SyncRequest(self)
-        if (response := await request.do()) and response.status < 300:
+        response = await SyncRequest(self).do()
+        if response.success:
             return Ok(data=response.data)
         else:
             return Error(error=f"Bad status: {response.status}")
 
     async def me(self) -> Result:
         self.info("Get user information")
-        request = MeRequest(self)
-        if (response := await request.do()) and response.status < 300:
+        response = await MeRequest(self).do()
+        if response.success:
             return Ok(data=response.data["telegramUser"])
         else:
             return Error(error=f"Bad status: {response.status}")
 
     async def tap(self, count: int, available: int) -> Result:
         self.info(f"Tap {count} times")
-        request = TapRequest(self, count=count, total=available)
-        if (response := await request.do()) and response.status < 300:
+        response = await TapRequest(self, count=count, total=available).do()
+        if response.success:
             self.client.state.stat_taps(count)
             return Ok(data=response.data)
         else:
@@ -43,8 +43,8 @@ class APIController(LoggerMixin):
 
     async def get_upgrades(self) -> Result:
         self.debug(f"Get upgrades list")
-        request = GetUpgradesRequest(self)
-        if (response := await request.do()) and response.status < 300:
+        response = await GetUpgradesRequest(self).do()
+        if response.success:
             return Ok(data=response.data)
         else:
             return Error(error=f"Bad status: {response.status}")
@@ -55,9 +55,8 @@ class APIController(LoggerMixin):
         ung_info = f"{u['name']} {u['level']} lvl"
         upg_price = f"{price} coins (+ {cph}/h)"
         self.info(f"Buy {ung_info} for {upg_price}")
-        request = BuyUpgradeRequest(self, id=u["id"])
-
-        if (response := await request.do()) and response.status < 300:
+        response = await BuyUpgradeRequest(self, id=u["id"]).do()
+        if response.success:
             self.client.state.stat_upgrades()
             self.client.state.stat_upgrades_price(u["price"])
             self.client.state.stat_coins_per_hour(u["profitPerHourDelta"])
@@ -67,16 +66,16 @@ class APIController(LoggerMixin):
 
     async def claim_cipher(self, phrase: str) -> Result:
         self.info(f"Enter Morse passphrase: {phrase}")
-        request = DailyCipherRequest(self, phrase=phrase)
-        if (response := await request.do()) and response.status < 300:
+        response = await DailyCipherRequest(self, phrase=phrase).do()
+        if response.success:
             return Ok(data=response.data)
         else:
             return Error(error=f"Bad status: {response.status}")
 
     async def has_boost(self) -> Result:
         self.info(f"Check available boost")
-        request = HasBoostRequest(self)
-        if (response := await request.do()) and response.status < 300:
+        response = await HasBoostRequest(self).do()
+        if response.success:
             data = {x["id"]: x for x in response.data["boostsForBuy"]}
             if boosts := data.get("BoostFullAvailableTaps"):
                 self.debug(f"boost: {boosts}")
@@ -88,24 +87,24 @@ class APIController(LoggerMixin):
 
     async def buy_boost(self) -> Result:
         self.info("Buy boost")
-        request = BuyBoostRequest(self)
-        if (response := await request.do()) and response.status < 300:
+        response = await BuyBoostRequest(self).do()
+        if response.success:
             return Ok(data=response.data)
         else:
             return Error(error="Cannot get boost with level")
 
     async def get_tasks(self) -> Result:
         self.info("Get tasks")
-        request = GetTasksRequest(self)
-        if (response := await request.do()) and response.status < 300:
+        response = await GetTasksRequest(self).do()
+        if response.success:
             return Ok(data=response.data)
         else:
             return Error(error="Cannot get tasks")
 
     async def do_task(self, task: dict) -> Result:
         self.info("Do task")
-        request = DoTaskRequest(self, id=task["id"])
-        if (response := await request.do()) and response.status < 300:
+        response = await DoTaskRequest(self, id=task["id"]).do()
+        if response.success:
             return Ok(data=response.data)
         else:
             return Error(error=f"Cannot do task: {task}")

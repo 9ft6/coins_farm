@@ -11,6 +11,19 @@ class Response(BaseModel):
     data: Any = None
     status: int
     error: str = None
+    success: bool = False
+
+
+class ErrorResponse(Response):
+    def __init__(self, response, error):
+        super().__init__(error=error, status=response.status)
+
+
+class SuccessResponse(Response):
+    success: bool = True
+
+    def __init__(self, response, data):
+        super().__init__(status=response.status, data=data)
 
 
 class BaseRequest(BaseModel):
@@ -27,59 +40,52 @@ class BaseRequest(BaseModel):
         self.url = f"{self.base_url}/{self.path}"
 
     async def do(self):
-        return await self._make_request()
+        if response := await self._make_request():
+            return response
+        else:
+            return
 
-    async def _make_request(self, attempts=1, **kwargs):
-        while attempts:
-            pd = self.payload()
-            try:
-                async with self.api.session.request(
-                    self.method,
-                    self.url,
-                    headers=self.api.client.headers,
-                    json=pd,
-                    **kwargs
-                ) as response:
-                    if response.status >= 300:
-                        print(f"{self.url}: got a {response.status} "
-                              f"response code {await response.read()}")
-                        attempts -= 1
-                        return await self._make_request(
-                            attempts=attempts, **kwargs
-                        )
-                    try:
-                        result = await response.json()
-                    except Exception as e:
-                        # print(f"Can not decode body JSON: {e}")
-                        result = await response.read()
+    def get_kwargs(self):
+        return {
+            "method": self.method,
+            "url": self.url,
+            "headers": self.api.client.headers,
+            "json": self.payload(),
+        }
 
-                    # print(f"{self.url}: RESPONSE BODY: {result}")
-                    return Response(status=response.status, data=result)
-                    # return result, response.status
-            except aiohttp.InvalidURL as error:
-                print(f"{self.url}: Invalid url: {error}")
-                return None
-            except aiohttp.ClientPayloadError as error:
-                print(f"{self.url}: Malformed payload: {error}")
-                return None
-            except (
-                aiohttp.ClientConnectorError,
-                aiohttp.ClientOSError,
-                aiohttp.ClientResponseError,
-                aiohttp.ServerDisconnectedError,
-                asyncio.TimeoutError,
-                ValueError,
-            ) as error:
-                attempts -= 1
-                print(f"{self.url}: Got an error {error} during GET request")
-                if not attempts:
-                    break
+    async def _make_request(self):
+        try:
+            async with (self.api.session.request(**self.get_kwargs()) as resp):
+                try:
+                    body = await resp.json()
+                except:
+                    body = await resp.read()
 
-                return await self._make_request(attempts=attempts, **kwargs)
+                if resp.status >= 300:
+                    return self._error(resp, f"got {resp.status} code: {body}")
 
-        print(f"{self.url}: Exceeded the number of attempts "
-              f"to perform {self.method} request")
-        return None
+                return self._success(resp, body)
+        except aiohttp.InvalidURL:
+            return self._error(resp, f"Invalid url: {self.url}")
+        except aiohttp.ClientPayloadError:
+            return self._error(resp, f"Malformed payload")
+        except (
+            aiohttp.ClientConnectorError,
+            aiohttp.ClientOSError,
+            aiohttp.ClientResponseError,
+            aiohttp.ServerDisconnectedError,
+            asyncio.TimeoutError,
+            ValueError,
+        ) as error:
+
+            return self._error(resp, f"Got an error {error}")
+
+    def _success(self, resp, data):
+        return SuccessResponse(resp, data)
+
+    def _error(self, resp, error):
+        self.api.error(error)
+        return ErrorResponse(resp, error)
 
     def payload(self):
         ...
