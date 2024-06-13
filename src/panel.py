@@ -1,6 +1,9 @@
 import asyncio
 
-from pynput import keyboard
+try:
+    from pynput import keyboard
+except:
+    keyboard = None
 
 from config import cfg
 
