@@ -15,6 +15,10 @@ class Headers(dict):
 
 
 class MainConfig(BaseSettings):
+    class Config:
+        env_file = "../env/.env"
+        env_file_encoding = 'utf-8'
+
     # Hamster Kombat
     upgrade_enable: bool = False
     upgrade_depends: bool = False
@@ -24,6 +28,7 @@ class MainConfig(BaseSettings):
     # CUI
     cui_last_logs: int = 30  # last logs line count in terminal
     cui_refresh: int = 2  # secs
+    use_emoji: bool = True
 
     # Client
     sleep_time: tuple[int, int] = (100, 200)

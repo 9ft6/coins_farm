@@ -34,10 +34,10 @@ class ConsoleControlPanel:
         logger.show()
 
     def update_logger_line(self):
-        if any(platform.win32_ver()):
-            state = lambda s: "(+)" if s else "(-)"
-        else:
+        if cfg.use_emoji:
             state = lambda s: "🟢" if s else "🔴"
+        else:
+            state = lambda s: "(+)" if s else "(-)"
 
         logger.set_panel_line(
             f"Control Panel     "
