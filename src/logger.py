@@ -47,7 +47,10 @@ class CustomLogger:
         print("\033[H\033[J", end="")
 
     def show(self):
-        lines = [self.panel_line]
+        lines = []
+        if self.panel_line:
+            lines.append(self.panel_line)
+
         for client in self.clients:
             if logs := self.get_last_logs(client.id):
                 logs = '\n'.join(logs)

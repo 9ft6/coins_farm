@@ -16,9 +16,9 @@ class Headers(dict):
 
 class MainConfig(BaseSettings):
     # Hamster Kombat
-    upgrade_enable: bool = True
-    upgrade_depends: bool = True
-    do_tasks: bool = True
+    upgrade_enable: bool = False
+    upgrade_depends: bool = False
+    do_tasks: bool = False
     passphrase: str = ""
 
     # CUI
