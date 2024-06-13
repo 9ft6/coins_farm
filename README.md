@@ -85,12 +85,12 @@ This command activates the virtual environment and runs the main.py script locat
 To enter morse passphrase just put in ```cfg.passphrase``` like this ```cfg.passphrase: str = "airdrop"``` and it will be automatically claimed
 
 ## TODO
-- Claim tasks and earns
 - Telegram bot
 - Stat to the bot
 - Adding accounts by bot
 
-## Done
+Done
+- Auto tasks
 - update accounts management
 - Console user interface
 - refactor api module 

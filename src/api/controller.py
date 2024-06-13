@@ -73,7 +73,7 @@ class APIController(LoggerMixin):
         else:
             return Error(error=f"Bad status: {response.status}")
 
-    async def has_boost(self):
+    async def has_boost(self) -> Result:
         self.info(f"Check available boost")
         request = HasBoostRequest(self)
         if (response := await request.do()) and response.status < 300:
@@ -86,10 +86,26 @@ class APIController(LoggerMixin):
 
         return Error(error="Cannot get boost with level")
 
-    async def buy_boost(self):
+    async def buy_boost(self) -> Result:
         self.info("Buy boost")
         request = BuyBoostRequest(self)
         if (response := await request.do()) and response.status < 300:
             return Ok(data=response.data)
         else:
             return Error(error="Cannot get boost with level")
+
+    async def get_tasks(self) -> Result:
+        self.info("Get tasks")
+        request = GetTasksRequest(self)
+        if (response := await request.do()) and response.status < 300:
+            return Ok(data=response.data)
+        else:
+            return Error(error="Cannot get tasks")
+
+    async def do_task(self, task: dict) -> Result:
+        self.info("Do task")
+        request = DoTaskRequest(self, id=task["id"])
+        if (response := await request.do()) and response.status < 300:
+            return Ok(data=response.data)
+        else:
+            return Error(error=f"Cannot do task: {task}")

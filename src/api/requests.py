@@ -135,6 +135,19 @@ class GetUpgradesRequest(PostRequest):
     path: str = "upgrades-for-buy"
 
 
+class GetTasksRequest(PostRequest):
+    path: str = "list-tasks"
+
+
+class DoTaskRequest(PostRequest):
+    path: str = "check-task"
+    id: str
+
+    def payload(self):
+        return {"taskId": self.id}
+
+
+
 class BuyUpgradeRequest(PostRequest):
     path: str = "buy-upgrade"
     timestamp: int = Field(default_factory=lambda: int(time()))
@@ -167,4 +180,6 @@ __all__ = [
     "GetUpgradesRequest",
     "BuyUpgradeRequest",
     "DailyCipherRequest",
+    "GetTasksRequest",
+    "DoTaskRequest",
 ]

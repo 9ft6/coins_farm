@@ -59,6 +59,9 @@ class HamsterClient:
                 if taps_count := self.state.need_to_taps():
                     await self.do_taps(taps_count)
 
+                if cfg.do_tasks:
+                    await self.do_tasks()
+
                 if cfg.upgrade_depends and self.state.need_upgrade_depends:
                     await self.upgrade_depends()
                     self.state.set_no_upgrades_depends()
@@ -71,6 +74,16 @@ class HamsterClient:
 
                 self.api.debug(f"Going sleep {to_sleep} secs")
                 await asyncio.sleep(to_sleep)
+
+    async def do_tasks(self):
+        result = await self.api.get_tasks()
+        if result.success:
+            for task in result.data.get("tasks", []):
+                if task["isCompleted"]:
+                    continue
+
+                await self.api.do_task(task)
+                await asyncio.sleep(random.randint(1, 5))
 
     async def do_taps(self, taps: int = 1, only_update: bool = False):
         result = await self.api.tap(taps, taps)

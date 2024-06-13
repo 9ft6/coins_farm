@@ -18,11 +18,14 @@ class MainConfig(BaseSettings):
     # Game
     upgrade_enable: bool = True
     upgrade_depends: bool = True
+    do_tasks: bool = True
     passphrase: str = ""
 
-    # Client
+    # CUI
     cui_last_logs: int = 30  # last logs line count in terminal
     cui_refresh: int = 2  # secs
+
+    # Client
     sleep_time: tuple[int, int] = (100, 200)
     cui_show_last_msgs: int = 5
     # cycle_timeout: int = 10  # secs
