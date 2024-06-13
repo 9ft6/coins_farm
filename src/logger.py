@@ -50,7 +50,7 @@ class CustomLogger:
     async def input(self, text):
         self.stop_showing = False
         self.clear()
-        string = await aioconsole.ainput(f"    {text} ")
+        string = await aioconsole.ainput(f"\n    {text} ")
         self.stop_showing = True
         self.show()
         return string

@@ -23,7 +23,6 @@ class MainConfig(BaseSettings):
     upgrade_enable: bool = False
     upgrade_depends: bool = False
     do_tasks: bool = False
-    passphrase: str = ""
 
     # CUI
     cui_last_logs: int = 30  # last logs line count in terminal
