@@ -1,26 +1,28 @@
+import asyncio
 import platform
 
 from sshkeyboard import listen_keyboard_manual
 
 from config import cfg
+from logger import logger
 
 
 class ConsoleControlPanel:
-    def __init__(self, logger):
-        self.logger = logger
+    def __init__(self, clients):
+        self.clients = clients
         self.update_logger_line()
 
     async def run(self):
-        await listen_keyboard_manual(on_release=lambda k: self.on_press(k))
+        await listen_keyboard_manual(on_release=self.on_press)
 
-    def on_press(self, key):
+    async def on_press(self, key):
         match key:
             case "f3":
                 print('EnterCombo')
             case "f4":
                 print('PassPhrase')
             case "f5":
-                print('Sync')
+                await asyncio.gather(*[c.run_pipeline() for c in self.clients])
             case "f6":
                 cfg.do_tasks = not cfg.do_tasks
             case "f7":
@@ -29,7 +31,7 @@ class ConsoleControlPanel:
                 cfg.upgrade_depends = not cfg.upgrade_depends
 
         self.update_logger_line()
-        self.logger.show()
+        logger.show()
 
     def update_logger_line(self):
         if any(platform.win32_ver()):
@@ -37,7 +39,7 @@ class ConsoleControlPanel:
         else:
             state = lambda s: "🟢" if s else "🔴"
 
-        self.logger.set_panel_line(
+        logger.set_panel_line(
             f"Control Panel     "
             f"| Combo (F3) "
             f"| PassPhrase (F4) "

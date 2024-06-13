@@ -39,41 +39,46 @@ class HamsterClient:
                 f"{coins:<8} {cph}/h (+ {cph_improved})\n"
                 f"Last logs:                       upgrades bought {upgrades}")
 
-    async def run_pipeline(self):
+    async def run(self):
         async with aiohttp.ClientSession() as session:
             self.api = APIController(session, self)
-
-            tg_user = (await self.api.me()).data
-            self.state.set_user(tg_user)
-            await asyncio.sleep(random.randint(1, 100) / 100)
-            sync_response = await self.api.synchronize()
-            balance = sync_response.data["clickerUser"]["balanceCoins"]
-            self.state.update(sync_response)
-            self.state.set_start_balance(balance)
+            await self.synchronize_all()
 
             if cfg.passphrase:
                 await self.api.claim_cipher(cfg.passphrase)
                 self.api.info(f"Passphrase entered: {cfg.passphrase}")
 
             while True:
-                if taps_count := self.state.need_to_taps():
-                    await self.do_taps(taps_count)
-
-                if cfg.do_tasks:
-                    await self.do_tasks()
-
-                if cfg.upgrade_depends and self.state.need_upgrade_depends:
-                    await self.upgrade_depends()
-                    self.state.set_no_upgrades_depends()
-
-                if cfg.upgrade_enable:
-                    await self.upgrade()
+                await self.run_pipeline()
 
                 to_sleep = random.randint(*cfg.sleep_time)
-                self.state.update(await self.api.synchronize())
-
                 self.api.debug(f"Going sleep {to_sleep} secs")
                 await asyncio.sleep(to_sleep)
+
+    async def synchronize_all(self):
+        tg_user = (await self.api.me()).data
+        self.state.set_user(tg_user)
+        await asyncio.sleep(random.randint(1, 100) / 100)
+        sync_response = await self.api.synchronize()
+        balance = sync_response.data["clickerUser"]["balanceCoins"]
+        self.state.update(sync_response)
+        self.state.set_start_balance(balance)
+
+    async def run_pipeline(self):
+        if taps_count := self.state.need_to_taps():
+            await self.do_taps(taps_count)
+
+        if cfg.do_tasks:
+            await self.do_tasks()
+
+        if cfg.upgrade_depends and self.state.need_upgrade_depends:
+            await self.upgrade_depends()
+            self.state.set_no_upgrades_depends()
+
+        if cfg.upgrade_enable:
+            await self.upgrade()
+
+        self.state.update(await self.api.synchronize())
 
     async def do_tasks(self):
         result = await self.api.get_tasks()
@@ -114,11 +119,13 @@ class HamsterClient:
             )
             if available_upgrades := await self.get_available_upgrades():
                 depends = {u["id"]: u for u in filtered}
+                print(depends)
                 upgrades = {u["id"]: u for u in available_upgrades}
                 for _id, depend in depends.items():
                     if upgrade := upgrades.get(_id):
                         for _ in range(upgrade["level"], depend["level"] + 1):
-                            await self.buy_upgrade(upgrade)
+                            # await self.buy_upgrade(upgrade)
+                            ...
 
     async def get_available_upgrades(self, max_price=1_000_000):
         result = await self.api.get_upgrades()
