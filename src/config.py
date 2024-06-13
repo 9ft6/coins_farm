@@ -15,7 +15,7 @@ class Headers(dict):
 
 
 class MainConfig(BaseSettings):
-    # Game
+    # Hamster Kombat
     upgrade_enable: bool = True
     upgrade_depends: bool = True
     do_tasks: bool = True
