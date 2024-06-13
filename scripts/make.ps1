@@ -40,7 +40,6 @@ function Run-Tests {
 function Show-Help {
     Write-Host "Available commands:"
     Write-Host "Install-Dependencies    - Setup virtual environment and install dependencies"
-    Write-Host "Install-DevDependencies - Setup virtual environment and install development dependencies"
     Write-Host "Run-App                 - Run the application"
 }
 
@@ -48,9 +47,6 @@ function Show-Help {
 switch ($args[0]) {
     "install" {
         Install-Dependencies
-    }
-    "install-dev" {
-        Install-DevDependencies
     }
     "run" {
         Run-App

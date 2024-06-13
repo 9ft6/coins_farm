@@ -18,16 +18,16 @@ class APIController(LoggerMixin):
 
     async def synchronize(self) -> Result:
         self.debug("Synchronizing")
-        response = await SyncRequest(self).do()
-        if response.status < 300:
+        request = SyncRequest(self)
+        if (response := await request.do()) and response.status < 300:
             return Ok(data=response.data)
         else:
             return Error(error=f"Bad status: {response.status}")
 
     async def me(self) -> Result:
         self.info("Get user information")
-        response = await MeRequest(self).do()
-        if response.status < 300:
+        request = MeRequest(self)
+        if (response := await request.do()) and response.status < 300:
             return Ok(data=response.data["telegramUser"])
         else:
             return Error(error=f"Bad status: {response.status}")
@@ -35,8 +35,7 @@ class APIController(LoggerMixin):
     async def tap(self, count: int, available: int) -> Result:
         self.info(f"Tap {count} times")
         request = TapRequest(self, count=count, total=available)
-        response = await request.do()
-        if response.status < 300:
+        if (response := await request.do()) and response.status < 300:
             self.client.state.stat_taps(count)
             return Ok(data=response.data)
         else:
@@ -45,8 +44,7 @@ class APIController(LoggerMixin):
     async def get_upgrades(self) -> Result:
         self.debug(f"Get upgrades list")
         request = GetUpgradesRequest(self)
-        response = await request.do()
-        if response.status < 300:
+        if (response := await request.do()) and response.status < 300:
             return Ok(data=response.data)
         else:
             return Error(error=f"Bad status: {response.status}")
@@ -70,8 +68,7 @@ class APIController(LoggerMixin):
     async def claim_cipher(self, phrase: str) -> Result:
         self.info(f"Enter Morse passphrase: {phrase}")
         request = DailyCipherRequest(self, phrase=phrase)
-        response = await request.do()
-        if response.status < 300:
+        if (response := await request.do()) and response.status < 300:
             return Ok(data=response.data)
         else:
             return Error(error=f"Bad status: {response.status}")
@@ -79,8 +76,7 @@ class APIController(LoggerMixin):
     async def has_boost(self):
         self.info(f"Check available boost")
         request = HasBoostRequest(self)
-        response = await request.do()
-        if response.status < 300:
+        if (response := await request.do()) and response.status < 300:
             data = {x["id"]: x for x in response.data["boostsForBuy"]}
             if boosts := data.get("BoostFullAvailableTaps"):
                 self.debug(f"boost: {boosts}")
@@ -93,8 +89,7 @@ class APIController(LoggerMixin):
     async def buy_boost(self):
         self.info("Buy boost")
         request = BuyBoostRequest(self)
-        response = await request.do()
-        if response.status < 300:
+        if (response := await request.do()) and response.status < 300:
             return Ok(data=response.data)
         else:
             return Error(error="Cannot get boost with level")

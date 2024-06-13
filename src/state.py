@@ -38,6 +38,7 @@ class Statistics:
 class State(BaseModel, Statistics):
     data: dict = {}
     user: User | None = None
+    need_upgrade_depends: bool = True
 
     def set_state(self, result: Result):
         self.data = result.data
@@ -70,3 +71,6 @@ class State(BaseModel, Statistics):
             return f"{self.user.name[:7]} {self.user.last_name[:7]}"
         else:
             return "Unknown"
+
+    def set_no_upgrades_depends(self):
+        self.need_upgrade_depends = False

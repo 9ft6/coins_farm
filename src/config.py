@@ -15,15 +15,21 @@ class Headers(dict):
 
 
 class MainConfig(BaseSettings):
-    tokens_file: Path = Path("../data/tokens")
-    headers: dict[int, Headers] | None = None
+    # Game
     upgrade_enable: bool = True
+    upgrade_depends: bool = True
+    passphrase: str = ""
+
+    # Client
     cui_last_logs: int = 30  # last logs line count in terminal
     cui_refresh: int = 2  # secs
     sleep_time: tuple[int, int] = (100, 200)
-    passphrase: str = ""
     cui_show_last_msgs: int = 5
     # cycle_timeout: int = 10  # secs
+
+    # common
+    tokens_file: Path = Path("../data/tokens")
+    headers: dict[int, Headers] | None = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

@@ -1,4 +1,5 @@
 import asyncio
+import json
 import random
 
 import aiohttp
@@ -58,6 +59,10 @@ class HamsterClient:
                 if taps_count := self.state.need_to_taps():
                     await self.do_taps(taps_count)
 
+                if cfg.upgrade_depends and self.state.need_upgrade_depends:
+                    await self.upgrade_depends()
+                    self.state.set_no_upgrades_depends()
+
                 if cfg.upgrade_enable:
                     await self.upgrade()
 
@@ -83,36 +88,59 @@ class HamsterClient:
                         if result.success:
                             self.state.update(result)
 
-    async def upgrade(self):
+    async def upgrade_depends(self):
         result = await self.api.get_upgrades()
         if result.success:
             filtered = filter(
                 lambda x: (
-                    x["isAvailable"]
-                    and x["profitPerHour"]
-                    and not x["isExpired"]
-                    and not x.get("cooldownSeconds", 0)
-                    and x["price"] < 1_000_000
+                    not x["isExpired"]
+                    and x.get("condition")
+                    and x["condition"]["_type"] == "ByUpgrade"
+                ),
+                result.data["upgradesForBuy"],
+            )
+            if available_upgrades := await self.get_available_upgrades():
+                depends = {u["id"]: u for u in filtered}
+                upgrades = {u["id"]: u for u in available_upgrades}
+                for _id, depend in depends.items():
+                    if upgrade := upgrades.get(_id):
+                        for _ in range(upgrade["level"], depend["level"] + 1):
+                            await self.buy_upgrade(upgrade)
+
+    async def get_available_upgrades(self, max_price=1_000_000):
+        result = await self.api.get_upgrades()
+        if result.success:
+            filtered = filter(
+                lambda x: (
+                        x["isAvailable"]
+                        and x["profitPerHour"]
+                        and not x["isExpired"]
+                        and not x.get("cooldownSeconds", 0)
+                        and max_price == 0 or x["price"] < max_price
                 ),
                 result.data["upgradesForBuy"],
             )
             upgrades = []
-            for upgrade in filtered:
-                upgrade["ppp"] = upgrade["price"] / upgrade["profitPerHourDelta"]
-                upgrades.append(upgrade)
+            for u in filtered:
+                pph = u.get("profitPerHourDelta")
+                u["ppp"] = u["price"] / pph if pph else 0
+                upgrades.append(u)
 
+            return upgrades
+
+    async def upgrade(self):
+        if upgrades := await self.get_available_upgrades():
             balance = self.state.balance()
-            total = 0
-            money = 0
             upgrades = sorted(upgrades, key=lambda x: x["ppp"], reverse=True)
             for upgrade in list(upgrades)[-4:]:
                 if upgrade["price"] <= balance:
-                    total += upgrade["profitPerHourDelta"]
-                    money += upgrade["price"]
-                    balance -= upgrade["price"]
-                    result = await self.api.buy_upgrade(upgrade)
-                    self.state.update(result)
+                    await self.buy_upgrade(upgrade)
                     await asyncio.sleep(2)
+
+    async def buy_upgrade(self, upgrade: dict):
+        result = await self.api.buy_upgrade(upgrade)
+        self.state.update(result)
+        return result.success
 
     def client_line(self):
         return self.headers.__hash__()
