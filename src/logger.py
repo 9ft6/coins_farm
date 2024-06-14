@@ -64,6 +64,7 @@ class CustomLogger:
             if logs := self.get_last_logs(client.id):
                 logs = '\n'.join(logs)
                 lines.append(self.get_line(client.id, f"{client}\n{logs}\n"))
+
         lines.append("")
         lines.extend(self.log_lines[-cfg.cui_last_logs:])
         print("\n".join(lines))

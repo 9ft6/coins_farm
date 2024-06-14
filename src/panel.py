@@ -2,6 +2,7 @@ import aioconsole
 import asyncio
 from functools import wraps
 
+from colorama import Fore, Style
 from sshkeyboard import listen_keyboard_manual
 
 from config import cfg
@@ -78,11 +79,11 @@ class MultiSelect:
             for x, value in enumerate(line):
                 is_selected = f'{x}x{y}' in self.selected
                 is_cursor = (x, y) == (self.x, self.y)
-                marker = "*" if is_selected else " "
+                marker = Fore.GREEN if is_selected else ""
                 value = f"{value:^{longest}}"
-                l.append(f'{">" if is_cursor else " "}'
-                         f'{marker}{value}{marker}'
-                         f'{"<" if is_cursor else " "}')
+                l.append(f'{">>" if is_cursor else "  "}'
+                         f'{marker}{value}{Style.RESET_ALL}'
+                         f'{"<<" if is_cursor else "  "}')
             temp.append(l)
 
         lines.extend(["  ".join(l) for l in temp])
