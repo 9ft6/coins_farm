@@ -145,6 +145,10 @@ class GetTasksRequest(PostRequest):
     path: str = "list-tasks"
 
 
+class GetConfigRequest(PostRequest):
+    path: str = "config"
+
+
 class DoTaskRequest(PostRequest):
     path: str = "check-task"
     id: str
@@ -188,4 +192,5 @@ __all__ = [
     "DailyCipherRequest",
     "GetTasksRequest",
     "DoTaskRequest",
+    "GetConfigRequest",
 ]
