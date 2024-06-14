@@ -76,5 +76,8 @@ class State(BaseModel, Statistics):
         self.need_upgrade_depends = False
 
     def get_upgrades_by_ids(self, ids: list[str]):
+        if not ids:
+            return []
+
         upgrades = self.data.get("upgradesForBuy", [])
         return [u for u in upgrades if u["id"] in ids]

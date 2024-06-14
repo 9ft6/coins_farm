@@ -110,38 +110,55 @@ class HamsterClient:
 
     async def upgrade_depends(self):
         result = await self.api.get_upgrades()
-        if result.success:
-            filtered = filter(
-                lambda x: (
-                    not x["isExpired"]
-                    and x.get("condition")
-                    and x["condition"]["_type"] == "ByUpgrade"
-                ),
-                result.data["upgradesForBuy"],
-            )
-            if available_upgrades := await self.get_available_upgrades():
-                depends = {u["id"]: u for u in filtered}
-                upgrades = {u["id"]: u for u in available_upgrades}
+        if not result.success:
+            return
 
-                # print(json.dumps(depends, indent=4))
-                # print(json.dumps(upgrades, indent=4))
+        available_upgrades = await self.get_available_upgrades()
+        if not available_upgrades:
+            return
 
-                for _id, depend in depends.items():
-                    if upgrade := upgrades.get(_id):
-                        for _ in range(upgrade["level"], depend["level"] + 1):
-                            # await self.buy_upgrade(upgrade)
-                            ...
+        filtered = filter(
+            lambda x: (
+                not x["isExpired"]
+                and x.get("condition")
+                and x["condition"]["_type"] == "ByUpgrade"
+            ),
+            result.data["upgradesForBuy"],
+        )
+        conditions = [u["condition"] for u in filtered]
+        depends = {c["upgradeId"]: c for c in conditions}
+        upgrades = {u["id"]: u for u in available_upgrades}
+
+        to_upgrade = {}
+        for _id, d in depends.items():
+            if u := upgrades.get(_id):
+                if (
+                    u["level"] < d["level"]
+                    and u["price"] < 100_000
+                    and u["isAvailable"]
+                    and not d["isExpired"]
+                ):
+                    u["to_level"] = d["level"]
+                    to_upgrade[_id] = u
+
+        for _id, u in to_upgrade.items():
+            for _ in range(u["level"], u["to_level"] + 1):
+                self.api.info(f"Upgrade {_id} {u['level']} -> {u['to_level']}")
+                result = await self.buy_upgrade(u)
+                if result:
+                    u["level"] += 1
+                    await asyncio.sleep(0.5)
 
     async def get_available_upgrades(self, max_price=1_000_000):
         result = await self.api.get_upgrades()
         if result.success:
             filtered = filter(
                 lambda x: (
-                        x["isAvailable"]
-                        and x["profitPerHour"]
-                        and not x["isExpired"]
-                        and not x.get("cooldownSeconds", 0)
-                        and max_price == 0 or x["price"] < max_price
+                    x["isAvailable"]
+                    and x["profitPerHour"]
+                    and not x["isExpired"]
+                    and not x.get("cooldownSeconds", 0)
+                    and (max_price == 0 or x["price"] < max_price)
                 ),
                 result.data["upgradesForBuy"],
             )
