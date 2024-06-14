@@ -1,20 +1,12 @@
-import aiohttp
+from core.models import *
+from core.api import BaseAPI
+from core import utils
+from services.hamster_kombat.requests import *
+from services.hamster_kombat.logger import logger, CustomLogger
 
-import utils
-from logger import LoggerMixin
-from api.requests import *
-from api.models import *
 
-
-class APIController(LoggerMixin):
-    session: aiohttp.ClientSession
-
-    def __init__(self, session, client):
-        self.session = session
-        self.client = client
-
-    def log_id(self):
-        return self.client.id
+class HamsterAPI(BaseAPI):
+    logger: CustomLogger = logger
 
     async def synchronize(self) -> Result:
         self.debug("Synchronizing")

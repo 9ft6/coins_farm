@@ -1,9 +1,9 @@
 import asyncio
 
-from client import HamsterClient
 from config import cfg
-from logger import logger
-from panel import ConsoleControlPanel
+from services.hamster_kombat.client import HamsterClient
+from services.hamster_kombat.logger import logger
+from services.hamster_kombat.panel import ConsoleControlPanel
 
 
 class HamsterDispatcher:

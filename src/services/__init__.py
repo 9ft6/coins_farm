@@ -1,0 +1,1 @@
+from services.hamster_kombat import HamsterClient

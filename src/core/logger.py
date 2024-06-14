@@ -2,8 +2,6 @@ import asyncio
 from datetime import datetime
 from time import monotonic
 
-from sshkeyboard import listen_keyboard_manual
-import aioconsole
 from colorama import init, Fore, Style
 
 from config import cfg
@@ -98,11 +96,8 @@ class CustomLogger:
         return self.last_logs.get(id, [])
 
 
-logger = CustomLogger()
-
-
 class LoggerMixin:
-    logger: CustomLogger = logger
+    logger: CustomLogger
 
     def log_id(self):
         return "default"

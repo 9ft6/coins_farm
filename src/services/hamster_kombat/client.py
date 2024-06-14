@@ -1,25 +1,16 @@
 import asyncio
-import json
 import random
 
-import aiohttp
+from config import cfg
+from core import utils
+from core.client import BaseClient, BaseAPI
+from services.hamster_kombat.api import HamsterAPI
+from services.hamster_kombat.state import State, BaseState
 
-import utils
-from config import Headers, cfg
-from state import State
-from api import APIController
 
-
-class HamsterClient:
-    id: int
-    headers: Headers
-    state: State
-    api: APIController
-
-    def __init__(self, id: int, headers: Headers):
-        self.id = id
-        self.headers = headers
-        self.state = State()
+class HamsterClient(BaseClient):
+    api_class: BaseAPI = HamsterAPI
+    state_class: BaseState = State
 
     def __str__(self):
         balance_raw = int(self.state.balance())
@@ -39,17 +30,8 @@ class HamsterClient:
                 f"{coins:<8} {cph}/h (+ {cph_improved})\n"
                 f"Last logs:                       upgrades bought {upgrades}")
 
-    async def run(self):
-        async with aiohttp.ClientSession() as session:
-            self.api = APIController(session, self)
-            await self.synchronize_all()
-
-            while True:
-                await self.run_pipeline()
-
-                to_sleep = random.randint(*cfg.sleep_time)
-                self.api.debug(f"Going sleep {to_sleep} secs")
-                await asyncio.sleep(to_sleep)
+    async def before_run(self):
+        await self.synchronize_all()
 
     async def synchronize_all(self):
         tg_user = (await self.api.me()).data
@@ -119,7 +101,8 @@ class HamsterClient:
 
         filtered = filter(
             lambda x: (
-                not x["isExpired"]
+                x
+                and not x.get("isExpired")
                 and x.get("condition")
                 and x["condition"]["_type"] == "ByUpgrade"
             ),
@@ -133,10 +116,11 @@ class HamsterClient:
         for _id, d in depends.items():
             if u := upgrades.get(_id):
                 if (
-                    u["level"] < d["level"]
+                    u
+                    and u["level"] < d["level"]
                     and u["price"] < 100_000
                     and u["isAvailable"]
-                    and not d["isExpired"]
+                    and not d.get("isExpired")
                 ):
                     u["to_level"] = d["level"]
                     to_upgrade[_id] = u
@@ -154,9 +138,10 @@ class HamsterClient:
         if result.success:
             filtered = filter(
                 lambda x: (
-                    x["isAvailable"]
+                    x
+                    and x["isAvailable"]
                     and x["profitPerHour"]
-                    and not x["isExpired"]
+                    and not x.get("isExpired")
                     and not x.get("cooldownSeconds", 0)
                     and (max_price == 0 or x["price"] < max_price)
                 ),
@@ -174,7 +159,7 @@ class HamsterClient:
         if upgrades := await self.get_available_upgrades():
             balance = self.state.balance()
             upgrades = sorted(upgrades, key=lambda x: x["ppp"], reverse=True)
-            for upgrade in list(upgrades)[-4:]:
+            for upgrade in list(upgrades)[-10:]:
                 if upgrade["price"] <= balance:
                     await self.buy_upgrade(upgrade)
                     await asyncio.sleep(2)
@@ -189,9 +174,6 @@ class HamsterClient:
         if result.success:
             self.state.update(result)
         return result.success
-
-    def client_line(self):
-        return self.headers.__hash__()
 
     async def enter_passphrase(self, passphrase: str):
         if self.state.data.get('dailyCipher', {}).get('isClaimed'):

@@ -1,9 +1,7 @@
-import json
-
 from pydantic import BaseModel
 
-from api.models import Result
-from models import User
+from core.models import Result,  User
+from core.state import BaseState
 
 
 class Statistics:
@@ -35,19 +33,8 @@ class Statistics:
         return self.set_stat("coins_per_hour", value)
 
 
-class State(BaseModel, Statistics):
-    data: dict = {}
-    user: User | None = None
+class State(BaseState, Statistics):
     need_upgrade_depends: bool = True
-
-    def set_state(self, result: Result):
-        self.data = result.data
-
-    def set_user(self, user: dict):
-        self.user = User(**user)
-
-    def update(self, result: Result):
-        self.data.update(result.data)
 
     def need_to_taps(self):
         user = self.data["clickerUser"]
@@ -65,12 +52,6 @@ class State(BaseModel, Statistics):
 
     def coins_per_hour(self):
         return self.data.get("clickerUser", {}).get("earnPassivePerHour", "0")
-
-    def username(self):
-        if self.user:
-            return f"{self.user.name[:7]} {self.user.last_name[:7]}"
-        else:
-            return "Unknown"
 
     def set_no_upgrades_depends(self):
         self.need_upgrade_depends = False
