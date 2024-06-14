@@ -93,6 +93,14 @@ class APIController(LoggerMixin):
         else:
             return Error(error="Cannot get boost with level")
 
+    async def get_config(self) -> Result:
+        self.info("Get config")
+        response = await GetConfigRequest(self).do()
+        if response.success:
+            return Ok(data=response.data)
+        else:
+            return Error(error="Cannot get config")
+
     async def get_tasks(self) -> Result:
         self.info("Get tasks")
         response = await GetTasksRequest(self).do()
