@@ -3,6 +3,10 @@
   <img src="https://github.com/9ft6/hamster_farm/raw/media/pics/cui.png" alt="User Interface">
 </p>
 
+<p align="center">
+  <img src="https://github.com/9ft6/hamster_farm/raw/media/pics/combo.png" alt="User Interface">
+</p>
+
 ## Disclaimer
 
 Please, if you are interested in the development of this project, let me know. Also, any feedback you provide will influence the continuation of this project. Don't hesitate to ask me any questions here or on my [Telegram](https://t.me/dev9ft6). 
@@ -15,11 +19,13 @@ Please, if you are interested in the development of this project, let me know. A
 - Card mining
 - Console control panel
 - Console passphrase entering
+- Combo purchases
 
 **Soon:**
-- Combo purchases
 - Telegram control bot
 - Account management
+- Console upgrades
+- Ability to control each account separately
 
 ---
 
@@ -50,7 +56,7 @@ In the console, the top line is occupied by the control panel, which can be used
 
 *Below is a list of commands with a brief description:*
 
-- **F3**: Enter `Combo`. !coming-soon!
+- **F3**: Enter `Combo`.
 
 - **F4**: Enter a `PassPhrase` to all accounts.
 
