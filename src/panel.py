@@ -34,6 +34,7 @@ class MultiSelect:
     max_x: int = 0
     max_y: int = 0
     selected: set[str] = set()
+    fixed_count: bool = True
 
     def __init__(self, data: dict[str, list[str]], select_count: int):
         self.data = self.normalize_data(data)
@@ -126,8 +127,9 @@ class MultiSelect:
                     if len(self.selected) < self.select_count:
                         self.selected.add(string)
             case "enter":
-                # if len(self.selected) == self.select_count:
-                self.abort = True
+                is_full = len(self.selected) == self.select_count
+                if not self.fixed_count or is_full:
+                    self.abort = True
             case _:
                 return
 
@@ -194,6 +196,7 @@ class ConsoleControlPanel:
 
             self.ms = MultiSelect(data=data, select_count=3)
             selected = await self.ms.input("Select 3 to get combo:")
+            self.ms = None
             if len(selected) == 3:
                 await asyncio.sleep(0)
                 return selected
