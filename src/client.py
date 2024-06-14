@@ -54,10 +54,16 @@ class HamsterClient:
     async def synchronize_all(self):
         tg_user = (await self.api.me()).data
         self.state.set_user(tg_user)
-        await asyncio.sleep(random.randint(1, 100) / 100)
+
+        upgrades_response = await self.api.get_upgrades()
+        self.state.update(upgrades_response)
+
         sync_response = await self.api.synchronize()
-        balance = sync_response.data["clickerUser"]["balanceCoins"]
         self.state.update(sync_response)
+
+        self.state.update(await self.api.get_config())
+
+        balance = sync_response.data["clickerUser"]["balanceCoins"]
         self.state.set_start_balance(balance)
 
     async def run_pipeline(self):
@@ -115,8 +121,11 @@ class HamsterClient:
             )
             if available_upgrades := await self.get_available_upgrades():
                 depends = {u["id"]: u for u in filtered}
-                print(depends)
                 upgrades = {u["id"]: u for u in available_upgrades}
+
+                # print(json.dumps(depends, indent=4))
+                # print(json.dumps(upgrades, indent=4))
+
                 for _id, depend in depends.items():
                     if upgrade := upgrades.get(_id):
                         for _ in range(upgrade["level"], depend["level"] + 1):
@@ -153,6 +162,11 @@ class HamsterClient:
                     await self.buy_upgrade(upgrade)
                     await asyncio.sleep(2)
 
+    async def enter_combo(self, combo: list[str]):
+        upgrades = self.state.get_upgrades_by_ids(combo)
+        tasks = [self.buy_upgrade(u) for u in upgrades]
+        return asyncio.gather(*tasks)
+
     async def buy_upgrade(self, upgrade: dict):
         result = await self.api.buy_upgrade(upgrade)
         if result.success:
@@ -163,4 +177,8 @@ class HamsterClient:
         return self.headers.__hash__()
 
     async def enter_passphrase(self, passphrase: str):
+        if self.state.data.get('dailyCipher', {}).get('isClaimed'):
+            self.api.debug("Cipher is already claimed")
+            return
+
         return await self.api.claim_cipher(passphrase)
