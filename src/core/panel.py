@@ -33,10 +33,16 @@ class MultiSelect:
     max_x: int = 0
     max_y: int = 0
     selected: set[str] = set()
-    fixed_count: bool = True
+    fixed_count: bool
 
-    def __init__(self, data: dict[str, list[str]], select_count: int):
+    def __init__(
+        self,
+        data: dict[str, list[str]],
+        select_count: int,
+        fixed: bool = True
+    ):
         self.data = self.normalize_data(data)
+        self.fixed_count = fixed
         self.select_count = select_count
 
     @staticmethod

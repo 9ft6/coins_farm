@@ -2,6 +2,7 @@ import aioconsole
 import asyncio
 
 from config import cfg
+from core import utils
 from core.panel import MultiSelect, input_wrapper, BasePanel
 from services.hamster_kombat.logger import logger
 
@@ -49,25 +50,20 @@ class ConsoleControlPanel(BasePanel):
                 else:
                     data[section].append(upgrade["id"])
 
-            self.ms = MultiSelect(data=data, select_count=3)
+            self.ms = MultiSelect(data=data, select_count=3, fixed=False)
             selected = await self.ms.input("Select 3 to get combo:")
             self.ms = None
             if len(selected) == 3:
                 await asyncio.sleep(0)
-                return selected
+            return selected
 
     def update_logger_line(self):
-        if cfg.use_emoji:
-            state = lambda s: "🟢" if s else "🔴"
-        else:
-            state = lambda s: "(+)" if s else "(-)"
-
         logger.set_panel_line(
             f"Control Panel     "
             f"| Combo (F3) "
             f"| PassPhrase (F4) "
             f"| Sync (F5) "
-            f"| {state(cfg.do_tasks)} Tasks (F6) "
-            f"| {state(cfg.upgrade_enable)} Upgrades (F7) "
-            f"| {state(cfg.upgrade_depends)} Depends (F8) |"
+            f"| {utils.enable_emoji(cfg.do_tasks)} Tasks (F6) "
+            f"| {utils.enable_emoji(cfg.upgrade_enable)} Upgrades (F7) "
+            f"| {utils.enable_emoji(cfg.upgrade_depends)} Depends (F8) |"
         )

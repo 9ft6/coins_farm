@@ -37,6 +37,8 @@ class HamsterAPI(BaseAPI):
         self.debug(f"Get upgrades list")
         response = await GetUpgradesRequest(self).do()
         if response.success:
+            update = {"dailyCombo": response.data.get("dailyCombo")}
+            self.client.state.update(update)
             return Ok(data=response.data)
         else:
             return Error(error=f"Bad status: {response.status}")
@@ -108,3 +110,11 @@ class HamsterAPI(BaseAPI):
             return Ok(data=response.data)
         else:
             return Error(error=f"Cannot do task: {task}")
+
+    async def do_combo(self) -> Result:
+        self.info("Do combo")
+        response = await DailyComboRequest(self).do()
+        if response.success:
+            return Ok(data=response.data)
+        else:
+            return Error(error=f"Cannot do combo")

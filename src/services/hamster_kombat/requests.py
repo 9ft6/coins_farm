@@ -2,7 +2,7 @@ from time import time
 
 from pydantic import Field
 
-from core.requests import PostRequest, GetRequest
+from core.requests import PostRequest
 
 
 class MeRequest(PostRequest):
@@ -84,6 +84,10 @@ class DailyCipherRequest(PostRequest):
         return {"cipher": self.phrase.upper()}
 
 
+class DailyComboRequest(PostRequest):
+    path: str = "claim-daily-combo"
+
+
 __all__ = [
     "MeRequest",
     "SyncRequest",
@@ -96,4 +100,5 @@ __all__ = [
     "GetTasksRequest",
     "DoTaskRequest",
     "GetConfigRequest",
+    "DailyComboRequest",
 ]

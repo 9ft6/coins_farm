@@ -24,11 +24,21 @@ class HamsterClient(BaseClient):
         coins = f"({prefix} {coins})"
         upg_count = self.state.stat["upgrades"]
         upg_price = utils.readable(self.state.stat["upgrades_price"])
-        upgrades = f"{upg_count} pcs. spent {upg_price} coins."
+        upgrades = f"UPG: {upg_count}/{upg_price}$"
         balance = utils.readable(balance_raw)
-        return (f"{self.id:0>2} {name:^15} {taps:<11} balance: {balance:>8} "
-                f"{coins:<8} {cph}/h (+ {cph_improved})\n"
-                f"Last logs:                       upgrades bought {upgrades}")
+        morse_flag = utils.enable_emoji(self.state.has_morse())
+        combo_flag = utils.enable_emoji(self.state.has_combo())
+        task_flag = utils.enable_emoji(self.state.tasks_enabled())
+        depends_flag = utils.enable_emoji(self.state.depends_enabled())
+        upgrades_flag = utils.enable_emoji(self.state.upgrades_enabled())
+        is_selected = ">>" if False else "  "
+        return (
+            f"{is_selected}{self.id:0>2} {name:<19} {balance:>8}$ {coins:<8}"
+            f" + {cph}/h (+ {cph_improved}) {taps:<11} {upgrades}\n"
+            f"{is_selected}{self.state.user_level() or '':O>2} lvl          "
+            f"          {morse_flag} morse {combo_flag} combo {task_flag} "
+            f"tasks {upgrades_flag} upgrades: {depends_flag} depends"
+        )
 
     async def before_run(self):
         await self.synchronize_all()
@@ -133,7 +143,7 @@ class HamsterClient(BaseClient):
                     u["level"] += 1
                     await asyncio.sleep(0.5)
 
-    async def get_available_upgrades(self, max_price=1_000_000):
+    async def get_available_upgrades(self, max_price=2_000_000):
         result = await self.api.get_upgrades()
         if result.success:
             filtered = filter(
@@ -159,15 +169,16 @@ class HamsterClient(BaseClient):
         if upgrades := await self.get_available_upgrades():
             balance = self.state.balance()
             upgrades = sorted(upgrades, key=lambda x: x["ppp"], reverse=True)
-            for upgrade in list(upgrades)[-10:]:
+            for upgrade in list(upgrades)[-4:]:
                 if upgrade["price"] <= balance:
                     await self.buy_upgrade(upgrade)
-                    await asyncio.sleep(2)
+                    await asyncio.sleep(0.1)
 
     async def enter_combo(self, combo: list[str]):
         upgrades = self.state.get_upgrades_by_ids(combo)
         tasks = [self.buy_upgrade(u) for u in upgrades]
-        return asyncio.gather(*tasks)
+        await asyncio.gather(*tasks)
+        await self.api.do_combo()
 
     async def buy_upgrade(self, upgrade: dict):
         result = await self.api.buy_upgrade(upgrade)

@@ -14,8 +14,10 @@ class BaseState(BaseModel):
     def set_user(self, user: dict):
         self.user = User(**user)
 
-    def update(self, result: Result):
-        self.data.update(result.data)
+    def update(self, result: Result | dict):
+        if result:
+            result = result if isinstance(result, dict) else result.data
+            self.data.update(result)
 
     def username(self):
         if self.user:

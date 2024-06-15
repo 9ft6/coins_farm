@@ -1,7 +1,5 @@
-from pydantic import BaseModel
-
-from core.models import Result,  User
 from core.state import BaseState
+from config import cfg
 
 
 class Statistics:
@@ -35,6 +33,41 @@ class Statistics:
 
 class State(BaseState, Statistics):
     need_upgrade_depends: bool = True
+    auto_upgrade: bool = False
+    auto_task: bool = False
+    auto_depends: bool = True
+
+    def has_morse(self):
+        return not self.data.get("dailyCipher", {}).get("isClaimed")
+
+    def has_combo(self):
+
+        return not self.data.get("dailyCombo", {}).get("isClaimed")
+
+    def tasks_enabled(self):
+        return cfg.do_tasks
+        # return self.auto_tap
+
+    def depends_enabled(self):
+        return cfg.upgrade_depends
+        # return self.auto_depends
+
+    def upgrades_enabled(self):
+        return cfg.upgrade_enable
+        # return self.auto_upgrade
+
+    # def set_task_enabled(self, value: bool):
+    #     self.auto_tap = value
+    #
+    # def set_depends_enabled(self, value: bool):
+    #     self.auto_depends = value
+    #
+    # def set_upgrades_enabled(self, value: bool):
+    #     self.auto_upgrade = value
+
+    def user_level(self):
+        if user := self.data.get("clickerUser"):
+            return user["level"]
 
     def need_to_taps(self):
         user = self.data["clickerUser"]

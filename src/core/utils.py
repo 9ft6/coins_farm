@@ -1,6 +1,15 @@
 import platform
 import os
 
+from config import cfg
+
+
+def enable_emoji(s):
+    if cfg.use_emoji:
+        return "🟢" if s else "🔴"
+    else:
+        return "(+)" if s else "(-)"
+
 
 def clear_screen():
     current_os = platform.system()
