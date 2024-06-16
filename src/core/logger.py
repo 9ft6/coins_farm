@@ -31,6 +31,7 @@ class CustomLogger:
     clients: list
     log_lines: list[str] = []
     last_logs: dict[int, list[str]] = {}
+    last_screen: str = ""
     panel_line: str = ""
     show_main_screen: bool = True
 
@@ -53,7 +54,6 @@ class CustomLogger:
         print("\033[H\033[J", end="")
 
     def show(self):
-        self.clear()
         lines = []
         if self.panel_line:
             lines.append(self.panel_line)
@@ -65,7 +65,12 @@ class CustomLogger:
 
         lines.append("")
         lines.extend(self.log_lines[-cfg.cui_last_logs:])
-        print("\n".join(lines))
+
+        screen = "\n".join(lines)
+        if screen != self.last_screen:
+            self.last_screen = screen
+            self.clear()
+            print(screen)
 
     def log(self, level, id, message):
         if level != "debug":

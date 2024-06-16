@@ -26,6 +26,9 @@ Please, if you are interested in the development of this project, let me know. A
 **Soon:**
 - Telegram control bot
 - Account management
+- Update auth system: auth with tg data
+- Single service for different games
+- Add Bloom Game
 
 ---
 

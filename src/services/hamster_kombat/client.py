@@ -36,7 +36,7 @@ class HamsterClient(BaseClient):
             f"{is_selected}{self.id:0>2} {name:<19} {balance:>8}$ {coins:<8}"
             f" + {cph}/h (+ {cph_improved}) {taps:<11} {upgrades}\n"
             f"{is_selected}{self.state.user_level() or '':O>2} lvl          "
-            f"          {morse_flag} morse {combo_flag} combo {task_flag} "
+            f"          {combo_flag} combo {morse_flag} morse {task_flag} "
             f"tasks {upgrades_flag} upgrades: {depends_flag} depends"
         )
 
