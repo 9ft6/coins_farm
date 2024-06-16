@@ -19,11 +19,6 @@ class MainConfig(BaseSettings):
         env_file = "../env/.env"
         env_file_encoding = 'utf-8'
 
-    # Hamster Kombat
-    upgrade_enable: bool = False
-    upgrade_depends: bool = False
-    do_tasks: bool = False
-
     # CUI
     cui_last_logs: int = 30  # last logs line count in terminal
     cui_refresh: int = 2  # secs

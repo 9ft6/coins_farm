@@ -3,14 +3,15 @@ import random
 
 from config import cfg
 from core import utils
-from core.client import BaseClient, BaseAPI
+from core.client import BaseClient
 from services.hamster_kombat.api import HamsterAPI
-from services.hamster_kombat.state import State, BaseState
+from services.hamster_kombat.state import HamsterState, HamsterConfig
 
 
 class HamsterClient(BaseClient):
-    api_class: BaseAPI = HamsterAPI
-    state_class: BaseState = State
+    api: HamsterAPI
+    state: HamsterState
+    cfg: HamsterConfig
 
     def __str__(self):
         balance_raw = int(self.state.balance())
@@ -28,9 +29,9 @@ class HamsterClient(BaseClient):
         balance = utils.readable(balance_raw)
         morse_flag = utils.enable_emoji(self.state.has_morse())
         combo_flag = utils.enable_emoji(self.state.has_combo())
-        task_flag = utils.enable_emoji(self.state.tasks_enabled())
-        depends_flag = utils.enable_emoji(self.state.depends_enabled())
-        upgrades_flag = utils.enable_emoji(self.state.upgrades_enabled())
+        task_flag = utils.enable_emoji(self.cfg.auto_task)
+        depends_flag = utils.enable_emoji(self.cfg.auto_depends)
+        upgrades_flag = utils.enable_emoji(self.cfg.auto_upgrade)
         is_selected = ">>" if False else "  "
         return (
             f"{is_selected}{self.id:0>2} {name:<19} {balance:>8}$ {coins:<8}"
@@ -39,6 +40,15 @@ class HamsterClient(BaseClient):
             f"          {morse_flag} morse {combo_flag} combo {task_flag} "
             f"tasks {upgrades_flag} upgrades: {depends_flag} depends"
         )
+
+    def api_class(self):
+        return HamsterAPI
+
+    def state_class(self):
+        return HamsterState
+
+    def cfg_class(self):
+        return HamsterConfig
 
     async def before_run(self):
         await self.synchronize_all()
@@ -62,14 +72,14 @@ class HamsterClient(BaseClient):
         if taps_count := self.state.need_to_taps():
             await self.do_taps(taps_count)
 
-        if cfg.do_tasks:
+        if self.cfg.auto_task:
             await self.do_tasks()
 
-        if cfg.upgrade_depends and self.state.need_upgrade_depends:
+        if self.cfg.auto_depends and self.cfg.need_upgrade_depends:
             await self.upgrade_depends()
-            self.state.set_no_upgrades_depends()
+            self.cfg.need_upgrade_depends = False
 
-        if cfg.upgrade_enable:
+        if self.cfg.auto_upgrade:
             await self.upgrade()
 
         self.state.update(await self.api.synchronize())

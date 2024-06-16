@@ -5,29 +5,28 @@ import aiohttp
 
 from config import Headers, cfg
 from core.api import BaseAPI
-from core.state import BaseState
-from services.hamster_kombat.state import State
+from core.state import BaseClientConfig, BaseState
 
 
 class BaseClient:
     api: BaseAPI
-    api_class: BaseAPI
     id: int
     headers: Headers
     state: BaseState
-    state_class: BaseState
+    cfg: BaseClientConfig
 
     def __init__(self, id: int, headers: Headers):
         self.id = id
         self.headers = headers
-        self.state = State()
+        self.state = self.state_class()()
+        self.cfg = self.cfg_class()()
 
     def __str__(self):
         return f"{self.id}: {self.api}"
 
     async def run(self):
         async with aiohttp.ClientSession() as session:
-            self.api = self.api_class(session, self)
+            self.api = self.api_class()(session, self)
             await self.before_run()
 
             while True:
@@ -41,4 +40,13 @@ class BaseClient:
         ...
 
     async def run_pipeline(self):
+        ...
+
+    def api_class(self):
+        ...
+
+    def state_class(self):
+        ...
+
+    def cfg_class(self):
         ...

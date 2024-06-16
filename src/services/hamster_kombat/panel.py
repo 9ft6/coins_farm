@@ -21,11 +21,11 @@ class ConsoleControlPanel(BasePanel):
             case "f5":
                 await asyncio.gather(*[c.run_pipeline() for c in self.clients])
             case "f6":
-                cfg.do_tasks = not cfg.do_tasks
+                self.switch_cfg_to_clients("auto_task")
             case "f7":
-                cfg.upgrade_enable = not cfg.upgrade_enable
+                self.switch_cfg_to_clients("auto_upgrade")
             case "f8":
-                cfg.upgrade_depends = not cfg.upgrade_depends
+                self.switch_cfg_to_clients("auto_depends")
             case "left" | "right" | "up" | "down" | "space" | "enter":
                 print(self.ms)
                 if self.ms:
@@ -34,6 +34,11 @@ class ConsoleControlPanel(BasePanel):
         if not self.ms:
             self.update_logger_line()
             logger.show()
+
+    def switch_cfg_to_clients(self, name):
+        for client in self.clients:
+            value = getattr(client.cfg, name)
+            setattr(client.cfg, name, not value)
 
     @input_wrapper
     async def ask_cipher(self):
@@ -63,7 +68,7 @@ class ConsoleControlPanel(BasePanel):
             f"| Combo (F3) "
             f"| PassPhrase (F4) "
             f"| Sync (F5) "
-            f"| {utils.enable_emoji(cfg.do_tasks)} Tasks (F6) "
-            f"| {utils.enable_emoji(cfg.upgrade_enable)} Upgrades (F7) "
-            f"| {utils.enable_emoji(cfg.upgrade_depends)} Depends (F8) |"
+            f"| Tasks (F6) "
+            f"| Upgrades (F7) "
+            f"| Depends (F8) |"
         )

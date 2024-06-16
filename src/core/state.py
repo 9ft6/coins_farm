@@ -24,3 +24,7 @@ class BaseState(BaseModel):
             return f"{self.user.name[:7]} {self.user.last_name[:7]}"
         else:
             return "Unknown"
+
+
+class BaseClientConfig:
+    ...

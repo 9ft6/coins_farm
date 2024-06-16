@@ -1,5 +1,4 @@
-from core.state import BaseState
-from config import cfg
+from core.state import BaseState, BaseClientConfig
 
 
 class Statistics:
@@ -31,39 +30,19 @@ class Statistics:
         return self.set_stat("coins_per_hour", value)
 
 
-class State(BaseState, Statistics):
+class HamsterConfig(BaseClientConfig):
     need_upgrade_depends: bool = True
     auto_upgrade: bool = False
     auto_task: bool = False
     auto_depends: bool = True
 
+
+class HamsterState(BaseState, Statistics):
     def has_morse(self):
         return not self.data.get("dailyCipher", {}).get("isClaimed")
 
     def has_combo(self):
-
         return not self.data.get("dailyCombo", {}).get("isClaimed")
-
-    def tasks_enabled(self):
-        return cfg.do_tasks
-        # return self.auto_tap
-
-    def depends_enabled(self):
-        return cfg.upgrade_depends
-        # return self.auto_depends
-
-    def upgrades_enabled(self):
-        return cfg.upgrade_enable
-        # return self.auto_upgrade
-
-    # def set_task_enabled(self, value: bool):
-    #     self.auto_tap = value
-    #
-    # def set_depends_enabled(self, value: bool):
-    #     self.auto_depends = value
-    #
-    # def set_upgrades_enabled(self, value: bool):
-    #     self.auto_upgrade = value
 
     def user_level(self):
         if user := self.data.get("clickerUser"):
@@ -85,9 +64,6 @@ class State(BaseState, Statistics):
 
     def coins_per_hour(self):
         return self.data.get("clickerUser", {}).get("earnPassivePerHour", "0")
-
-    def set_no_upgrades_depends(self):
-        self.need_upgrade_depends = False
 
     def get_upgrades_by_ids(self, ids: list[str]):
         if not ids:
