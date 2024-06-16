@@ -20,12 +20,12 @@ Please, if you are interested in the development of this project, let me know. A
 - Console control panel
 - Console passphrase entering
 - Combo purchases
+- Ability to control each account separately
+- Console upgrades
 
 **Soon:**
 - Telegram control bot
 - Account management
-- Console upgrades
-- Ability to control each account separately
 
 ---
 
@@ -35,7 +35,7 @@ Due to the popularity of such apps, this project might evolve into a comprehensi
 If you have any questions, feel free to message me on Telegram.
 
 ## Overview
-This application (bot) is designed to automatically manage multiple Telegram accounts for playing the popular game Hamster Kombat (https://hamsterkombat.io). To generate hourly income around the clock, the game requires user participation every three hours, which is impossible and turns a proud primate into a slave to a rodent. Justice will be restored by the unyielding silicon hand of justice, embodied in my bot.
+This application (bot) is designed to automatically/manual manage multiple Telegram game accounts for playing the popular game Hamster Kombat (https://hamsterkombat.io). To generate hourly income around the clock, the game requires user participation every three hours, which is impossible and turns a proud primate into a slave to a rodent. Justice will be restored by the unyielding silicon hand of justice, embodied in my bot.
 
 One of its key strengths is its ability to handle nearly all the necessary manipulations for successful farming. The bot efficiently manages multiple accounts, regardless of whether it's 1, 5, or 100, using asynchronous aiohttp requests.
 

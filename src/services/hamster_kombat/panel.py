@@ -50,18 +50,19 @@ class ConsoleControlPanel(BasePanel):
             self.ms = MultiSelect(data=data, select_count=3, fixed=False)
             selected = await self.ms.input("Select 3 to get combo:")
             self.ms = None
-            if len(selected) == 3:
-                await asyncio.sleep(0)
+
             return selected
+
+        await asyncio.sleep(0)
 
     def update_logger_line(self):
         selected = "all" if self.cursor == -1 else f" {self.cursor:0>2}"
         logger.set_panel_line(
             f"Selected: {selected}      "
-            f"| Combo (F3) "
+            f"| Upgrade (F3) "
             f"| PassPhrase (F4) "
             f"| Sync (F5) "
-            f"| Tasks (F6) "
-            f"| Upgrades (F7) "
-            f"| Depends (F8) |"
+            f"| AutoTasks (F6) "
+            f"| AutoUpgrades (F7) "
+            f"| AutoDepends (F8) |"
         )
