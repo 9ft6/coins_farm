@@ -5,6 +5,7 @@ import aiohttp
 
 from config import Headers, cfg
 from core.api import BaseAPI
+from core.panel import BasePanel
 from core.state import BaseClientConfig, BaseState
 
 
@@ -14,6 +15,7 @@ class BaseClient:
     headers: Headers
     state: BaseState
     cfg: BaseClientConfig
+    panel: BasePanel
 
     def __init__(self, id: int, headers: Headers):
         self.id = id
@@ -50,3 +52,6 @@ class BaseClient:
 
     def cfg_class(self):
         ...
+
+    def set_panel(self, panel):
+        self.panel = panel

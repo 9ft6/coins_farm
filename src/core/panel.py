@@ -145,11 +145,13 @@ class MultiSelect:
 
 
 class BasePanel:
+    cursor: int = -1
     ms: MultiSelect | None = None
 
     def __init__(self, clients):
         self.clients = clients
         self.update_logger_line()
+        [c.set_panel(self) for c in clients]
 
     async def run(self):
         await listen_keyboard_manual(
@@ -157,9 +159,52 @@ class BasePanel:
             delay_second_char=0.1,
         )
 
+    def move(self, key):
+        match key:
+            case "up":
+                if self.cursor > - 1:
+                    self.cursor -= 1
+                else:
+                    self.cursor = len(self.clients) - 1
+            case "down":
+                if self.cursor < len(self.clients):
+                    self.cursor += 1
+                else:
+                    self.cursor = - 1
+
+    def map(self, func, *args, **kwargs):
+        return [getattr(c, func)(*args, **kwargs) for c in self.clients]
+
+    async def async_map(self, coro, *args, **kwargs):
+        tasks = [getattr(c, coro)(*args, **kwargs) for c in self.clients]
+        return await asyncio.gather(*tasks)
+
+    def exec(self, func, *args, **kwargs):
+        if self.cursor == -1:
+            self.map(func, *args, **kwargs)
+        else:
+            client = self.clients[self.cursor]
+            getattr(client, func)(*args, **kwargs)
+
+    async def async_exec(self, coro, *args, **kwargs):
+        if self.cursor == -1:
+            await self.async_map(coro, *args, **kwargs)
+        else:
+            client = self.clients[self.cursor]
+            await getattr(client, coro)(*args, **kwargs)
+
+    def switch_cfg_to_clients(self, name):
+        if self.cursor == -1:
+            for client in self.clients:
+                value = getattr(client.cfg, name)
+                setattr(client.cfg, name, not value)
+        else:
+            client = self.clients[self.cursor]
+            value = getattr(client.cfg, name)
+            setattr(client.cfg, name, not value)
+
     async def on_press(self, key):
         ...
 
     def update_logger_line(self):
         ...
-

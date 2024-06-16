@@ -1,8 +1,6 @@
 import aioconsole
 import asyncio
 
-from config import cfg
-from core import utils
 from core.panel import MultiSelect, input_wrapper, BasePanel
 from services.hamster_kombat.logger import logger
 
@@ -12,14 +10,12 @@ class ConsoleControlPanel(BasePanel):
         match key:
             case "f3":
                 combo = await self.ask_combo()
-                tasks = [c.enter_combo(combo) for c in self.clients]
-                await asyncio.gather(*tasks)
+                await self.async_exec("enter_combo", combo)
             case "f4":
                 passphrase = await self.ask_cipher()
-                tasks = [c.enter_passphrase(passphrase) for c in self.clients]
-                await asyncio.gather(*tasks)
+                await self.async_exec("enter_passphrase", passphrase)
             case "f5":
-                await asyncio.gather(*[c.run_pipeline() for c in self.clients])
+                await self.async_exec("run_pipeline")
             case "f6":
                 self.switch_cfg_to_clients("auto_task")
             case "f7":
@@ -27,18 +23,14 @@ class ConsoleControlPanel(BasePanel):
             case "f8":
                 self.switch_cfg_to_clients("auto_depends")
             case "left" | "right" | "up" | "down" | "space" | "enter":
-                print(self.ms)
                 if self.ms:
                     self.ms.on_press(key)
+                else:
+                    self.move(key)
 
         if not self.ms:
             self.update_logger_line()
             logger.show()
-
-    def switch_cfg_to_clients(self, name):
-        for client in self.clients:
-            value = getattr(client.cfg, name)
-            setattr(client.cfg, name, not value)
 
     @input_wrapper
     async def ask_cipher(self):
@@ -63,8 +55,9 @@ class ConsoleControlPanel(BasePanel):
             return selected
 
     def update_logger_line(self):
+        selected = "all" if self.cursor == -1 else f" {self.cursor:0>2}"
         logger.set_panel_line(
-            f"Control Panel     "
+            f"Selected: {selected}      "
             f"| Combo (F3) "
             f"| PassPhrase (F4) "
             f"| Sync (F5) "

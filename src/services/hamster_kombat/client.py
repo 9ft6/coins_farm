@@ -1,7 +1,6 @@
 import asyncio
 import random
 
-from config import cfg
 from core import utils
 from core.client import BaseClient
 from services.hamster_kombat.api import HamsterAPI
@@ -32,7 +31,7 @@ class HamsterClient(BaseClient):
         task_flag = utils.enable_emoji(self.cfg.auto_task)
         depends_flag = utils.enable_emoji(self.cfg.auto_depends)
         upgrades_flag = utils.enable_emoji(self.cfg.auto_upgrade)
-        is_selected = ">>" if False else "  "
+        is_selected = ">>" if self.id == self.panel.cursor else "  "
         return (
             f"{is_selected}{self.id:0>2} {name:<19} {balance:>8}$ {coins:<8}"
             f" + {cph}/h (+ {cph_improved}) {taps:<11} {upgrades}\n"
