@@ -1,18 +1,19 @@
 from pydantic import BaseModel
 
 from core.models import Result
-from core.models import User
+from core.models import TgUser
 
 
 class BaseState(BaseModel):
     data: dict = {}
-    user: User | None = None
+    user: TgUser | None = None
+    user_class: BaseModel
 
     def set_state(self, result: Result):
         self.data = result.data
 
     def set_user(self, user: dict):
-        self.user = User(**user)
+        self.user = self.user_class(**user)
 
     def update(self, result: Result | dict):
         if result:

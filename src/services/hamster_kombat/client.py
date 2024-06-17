@@ -8,9 +8,14 @@ from services.hamster_kombat.state import HamsterState, HamsterConfig
 
 
 class HamsterClient(BaseClient):
+    slug: str = "hamster_kombat"
     api: HamsterAPI
     state: HamsterState
     cfg: HamsterConfig
+
+    host: str = "api.hamsterkombat.io"
+    referer: str = "https://hamsterkombat.io/"
+    origin: str = "https://hamsterkombat.io"
 
     def __str__(self):
         balance_raw = int(self.state.balance())
@@ -35,7 +40,7 @@ class HamsterClient(BaseClient):
         return (
             f"{is_selected}{self.id:0>2} {name:<19} {balance:>8}$ {coins:<8}"
             f" + {cph}/h (+ {cph_improved}) {taps:<11} {upgrades}\n"
-            f"{is_selected}{self.state.user_level() or '':O>2} lvl          "
+            f"  {self.state.user_level() or '':O>2} lvl          "
             f"          {combo_flag} combo {morse_flag} morse {task_flag} "
             f"tasks {upgrades_flag} upgrades: {depends_flag} depends"
         )

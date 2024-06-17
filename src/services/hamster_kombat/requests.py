@@ -5,16 +5,20 @@ from pydantic import Field
 from core.requests import PostRequest
 
 
-class MeRequest(PostRequest):
+class Post(PostRequest):
+    base_url: str = "https://api.hamsterkombat.io/clicker"
+
+
+class MeRequest(Post):
     base_url: str = "https://api.hamsterkombat.io/auth"
     path: str = "me-telegram"
 
 
-class SyncRequest(PostRequest):
+class SyncRequest(Post):
     path: str = "sync"
 
 
-class TapRequest(PostRequest):
+class TapRequest(Post):
     path: str = "tap"
     timestamp: int = Field(default_factory=lambda: int(time()))
     total: int
@@ -28,11 +32,11 @@ class TapRequest(PostRequest):
         }
 
 
-class HasBoostRequest(PostRequest):
+class HasBoostRequest(Post):
     path: str = "boosts-for-buy"
 
 
-class BuyBoostRequest(PostRequest):
+class BuyBoostRequest(Post):
     path: str = "buy-boost"
     timestamp: int = Field(default_factory=lambda: int(time()))
 
@@ -43,19 +47,19 @@ class BuyBoostRequest(PostRequest):
         }
 
 
-class GetUpgradesRequest(PostRequest):
+class GetUpgradesRequest(Post):
     path: str = "upgrades-for-buy"
 
 
-class GetTasksRequest(PostRequest):
+class GetTasksRequest(Post):
     path: str = "list-tasks"
 
 
-class GetConfigRequest(PostRequest):
+class GetConfigRequest(Post):
     path: str = "config"
 
 
-class DoTaskRequest(PostRequest):
+class DoTaskRequest(Post):
     path: str = "check-task"
     id: str
 
@@ -64,7 +68,7 @@ class DoTaskRequest(PostRequest):
 
 
 
-class BuyUpgradeRequest(PostRequest):
+class BuyUpgradeRequest(Post):
     path: str = "buy-upgrade"
     timestamp: int = Field(default_factory=lambda: int(time()))
     id: str
@@ -76,7 +80,7 @@ class BuyUpgradeRequest(PostRequest):
         }
 
 
-class DailyCipherRequest(PostRequest):
+class DailyCipherRequest(Post):
     path: str = "claim-daily-cipher"
     phrase: str
 
@@ -84,7 +88,7 @@ class DailyCipherRequest(PostRequest):
         return {"cipher": self.phrase.upper()}
 
 
-class DailyComboRequest(PostRequest):
+class DailyComboRequest(Post):
     path: str = "claim-daily-combo"
 
 

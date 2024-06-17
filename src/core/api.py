@@ -12,4 +12,3 @@ class BaseAPI(LoggerMixin):
 
     def log_id(self):
         return self.client.id
-

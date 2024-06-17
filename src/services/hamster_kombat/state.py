@@ -1,3 +1,4 @@
+from core.models import TgUser, BaseModel
 from core.state import BaseState, BaseClientConfig
 
 
@@ -38,6 +39,8 @@ class HamsterConfig(BaseClientConfig):
 
 
 class HamsterState(BaseState, Statistics):
+    user_class: BaseModel = TgUser
+
     def has_morse(self):
         return not self.data.get("dailyCipher", {}).get("isClaimed")
 

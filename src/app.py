@@ -1,5 +1,7 @@
-from services.hamster_kombat import HamsterDispatcher
+from services.hamster_kombat import Hamster
+from services.bloom import Bloom
 
 
 if __name__ == '__main__':
-    HamsterDispatcher().run()
+    Hamster().run()
+    # Bloom().run()

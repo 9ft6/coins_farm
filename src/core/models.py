@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
 
-class User(BaseModel):
+class TgUser(BaseModel):
     id: int = Field(..., alias="id")
     name: str = Field(..., alias="firstName")
     is_bot: bool = Field(..., alias="isBot")
@@ -27,5 +27,5 @@ __all__ = [
     "Result",
     "Ok",
     "Error",
-    "User",
+    "TgUser",
 ]

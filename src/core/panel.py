@@ -167,7 +167,7 @@ class BasePanel:
                 else:
                     self.cursor = len(self.clients) - 1
             case "down":
-                if self.cursor < len(self.clients):
+                if self.cursor < len(self.clients) - 1:
                     self.cursor += 1
                 else:
                     self.cursor = - 1

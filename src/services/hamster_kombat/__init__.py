@@ -1,18 +1,10 @@
-import asyncio
-
-from config import cfg
-from services.hamster_kombat.client import HamsterClient
-from services.hamster_kombat.logger import logger
-from services.hamster_kombat.panel import ConsoleControlPanel
+from core.runner import Runner
+from services.hamster_kombat.client import HamsterClient, BaseClient
+from services.hamster_kombat.logger import logger, CustomLogger
+from services.hamster_kombat.panel import ConsoleControlPanel, BasePanel
 
 
-class HamsterDispatcher:
-    def run(self):
-        asyncio.run(self._run())
-
-    async def _run(self):
-        clients = [HamsterClient(n, h) for n, h in cfg.headers.items()]
-        tasks = [c.run() for c in clients]
-        tasks.append(logger.run(clients))
-        tasks.append(ConsoleControlPanel(clients).run())
-        await asyncio.gather(*tasks)
+class Hamster(Runner):
+    client: BaseClient = HamsterClient
+    logger: CustomLogger = logger
+    panel: BasePanel = ConsoleControlPanel

@@ -6,6 +6,13 @@ import asyncio
 from pydantic import BaseModel
 
 
+class Headers(dict):
+    _token: str = None
+
+    def __hash__(self):
+        return hash(self._token)
+
+
 class Response(BaseModel):
     data: Any = None
     status: int
@@ -25,9 +32,9 @@ class SuccessResponse(Response):
         super().__init__(status=response.status, data=data)
 
 
-class BaseRequest(BaseModel):
+class Request(BaseModel):
     url: str | None = None
-    base_url: str = "https://api.hamsterkombat.io/clicker"
+    base_url: str
     path: str
     method: HTTPMethod
     data: str | None = None
@@ -54,6 +61,7 @@ class BaseRequest(BaseModel):
 
     async def _make_request(self):
         try:
+            print(self.get_kwargs())
             async with (self.api.session.request(**self.get_kwargs()) as resp):
                 try:
                     body = await resp.json()
@@ -90,11 +98,11 @@ class BaseRequest(BaseModel):
         ...
 
 
-class GetRequest(BaseRequest):
+class GetRequest(Request):
     method: HTTPMethod = HTTPMethod.GET
 
 
-class PostRequest(BaseRequest):
+class PostRequest(Request):
     method: HTTPMethod = HTTPMethod.POST
 
 
@@ -102,7 +110,7 @@ __all__ = [
     "Response",
     "ErrorResponse",
     "SuccessResponse",
-    "BaseRequest",
+    "Request",
     "GetRequest",
     "PostRequest",
 ]
