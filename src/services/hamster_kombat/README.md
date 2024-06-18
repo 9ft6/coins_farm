@@ -49,5 +49,5 @@ Pressing F4 allows you to enter a Morse phrase. Note that the phrase is not disp
 5. Paste it into a file in the `accounts/hamster_kombat` directory, with one account per line.
 
 <p align="center">
-  <img src="https://github.com/9ft6/hamster_farm/raw/media/pics/debugger.png" alt="User Interface">
+  <img src="https://github.com/9ft6/hamster_farm/raw/media/pics/hamster_debugger.png" alt="User Interface">
 </p>
