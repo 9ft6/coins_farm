@@ -1,4 +1,4 @@
-# HAMSTER KOMBAT
+# BLOOM
 
 > **Note:** This module is currently under development and is expected to be ready by June 20th. As a result, some information or screenshots may be missing from the documentation. Please stay tuned for updates.
 
@@ -6,18 +6,6 @@
 This module is a bot system for automatically claiming shitcoins.
 For it to work correctly, the account server must be running.
 You can start it by executing `make run-server` (see details on the main page).
-
-## Bot Pipeline
-- The bot checking and daily task
-- проверяет и если можно то фармит
-- проверяет и собирет друзей
-- и играет в игру до тех пор пока есть game pass
-
-## Console User Interface
-Under construction
-
-
-## Adding Accounts
 
 ## Bot Pipeline
 - The bot checks and completes daily tasks.
