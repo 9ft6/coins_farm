@@ -118,3 +118,12 @@ class HamsterAPI(BaseAPI):
             return Ok(data=response.data)
         else:
             return Error(error=f"Cannot do combo")
+
+    async def auth(self, data: str):
+        self.debug(f"Authenticate...")
+        response = await AuthRequest(self, data=data).do()
+        if response.success:
+            return Ok(data=response.data)
+        else:
+            return Error(error=f"Bad status: {response.status}")
+

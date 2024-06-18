@@ -9,8 +9,11 @@ class Post(PostRequest):
     base_url: str = "https://api.hamsterkombat.io/clicker"
 
 
-class MeRequest(Post):
+class AuthPost(PostRequest):
     base_url: str = "https://api.hamsterkombat.io/auth"
+
+
+class MeRequest(AuthPost):
     path: str = "me-telegram"
 
 
@@ -92,8 +95,17 @@ class DailyComboRequest(Post):
     path: str = "claim-daily-combo"
 
 
+class AuthRequest(AuthPost):
+    path: str = "auth-by-telegram-webapp"
+    data: str
+
+    def payload(self):
+        return {"initDataRaw": self.data}
+
+
 __all__ = [
     "MeRequest",
+    "AuthRequest",
     "SyncRequest",
     "TapRequest",
     "HasBoostRequest",

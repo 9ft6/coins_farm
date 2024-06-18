@@ -17,9 +17,7 @@ class BloomClient(BaseClient):
     origin: str = "https://telegram.blum.codes"
 
     def __str__(self):
-        return (
-            f"{self.token}"
-        )
+        return f"{self.token}"
 
     def api_class(self):
         return BloomAPI

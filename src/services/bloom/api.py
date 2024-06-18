@@ -72,25 +72,6 @@ class BloomAPI(BaseAPI):
             return Error(error=f"Bad status: {response.status}")
 
     async def claim_game(self, game_id: str, points: int):
-        '''
-        def claim_game(token, game_id, points):
-            url = "https://game-domain.blum.codes/api/v1/game/claim"
-
-            headers = CaseInsensitiveDict()
-            headers["accept"] = "application/json, text/plain, */*"
-            headers["accept-language"] = "en-US,en;q=0.9"
-            headers["authorization"] = "Bearer "+token
-            headers["content-type"] = "application/json"
-            headers["origin"] = "https://telegram.blum.codes"
-
-            headers["priority"] = "u=1, i"
-            headers["user-agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.0.0"
-            data = '{"gameId":"'+game_id+'","points":'+str(points)+'}'
-
-            resp = requests.post(url, headers=headers, data=data)
-            return resp  # Kembalikan objek respons, bukan teksnya
-
-        '''
         self.debug(f"Claiming game {game_id=}")
         response = await ClaimGameRequest(self, id=game_id, points=points).do()
         if response.success:
@@ -98,5 +79,11 @@ class BloomAPI(BaseAPI):
         else:
             return Error(error=f"Bad status: {response.status}")
 
-
+    async def auth(self, query: str):
+        self.debug(f"Authenticate...")
+        response = await AuthRequest(self, query=query).do()
+        if response.success:
+            return Ok(data=response.data)
+        else:
+            return Error(error=f"Bad status: {response.status}")
 

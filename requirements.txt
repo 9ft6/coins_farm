@@ -6,3 +6,6 @@ colorama
 fake-useragent
 sshkeyboard
 aioconsole
+aiofiles
+fastapi
+loguru

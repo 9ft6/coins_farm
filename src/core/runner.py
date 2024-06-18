@@ -1,9 +1,9 @@
 import asyncio
 
-from core.accounts import accounts
 from core.client import BaseClient
 from core.logger import CustomLogger
 from core.panel import BasePanel
+from clients import accounts
 
 
 class Runner:
@@ -15,9 +15,8 @@ class Runner:
         asyncio.run(self._run())
 
     async def _run(self):
-        tokens = accounts[self.client.slug]
-        print(tokens)
-        clients = [self.client(n, t) for n, t in enumerate(tokens)]
+        items = await accounts.get_accounts(self.client.slug)
+        clients = [self.client(n, a) for n, a in enumerate(items)]
         tasks = [c.run() for c in clients]
         tasks.append(self.logger.run(clients))
         tasks.append(self.panel(clients).run())

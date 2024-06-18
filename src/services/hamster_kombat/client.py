@@ -45,6 +45,9 @@ class HamsterClient(BaseClient):
             f"tasks {upgrades_flag} upgrades: {depends_flag} depends"
         )
 
+    def get_tokens_from_response(self, response):
+        return {"access": response.data["authToken"]}
+
     def api_class(self):
         return HamsterAPI
 

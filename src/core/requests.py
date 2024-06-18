@@ -61,7 +61,6 @@ class Request(BaseModel):
 
     async def _make_request(self):
         try:
-            print(self.get_kwargs())
             async with (self.api.session.request(**self.get_kwargs()) as resp):
                 try:
                     body = await resp.json()

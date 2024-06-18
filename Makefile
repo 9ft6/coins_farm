@@ -15,5 +15,11 @@ install: ## Make venv
 install-dev: ## Make venv
 	$(activate) && $(pip_install) -r requirements-dev.txt
 
-run: ## Run app
-	$(activate) && cd src && python app.py
+run-server: ## Run server
+	$(activate) && cd src && python app.py --server
+
+run-hamster: ## Run HamsterKombat
+	$(activate) && cd src && python app.py --hamster-kombat
+
+run-bloom: ## Run Bloom
+	$(activate) && cd src && python app.py --bloom

@@ -56,6 +56,16 @@ class ClaimGameRequest(PostRequest, GameDomain):
             "points": self.points,
         }
 
+
+class AuthRequest(PostRequest, GateWay):
+    path: str = "auth/provider/PROVIDER_TELEGRAM_MINI_APP"
+    query: str
+
+    def payload(self):
+        return {
+            "query": self.query
+        }
+
 __all__ = [
     "MeRequest",
     "BalanceRequest",
@@ -66,4 +76,5 @@ __all__ = [
     "ClaimFriendRequest",
     "PlayGameRequest",
     "ClaimGameRequest",
+    "AuthRequest",
 ]

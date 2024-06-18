@@ -6,4 +6,4 @@ class BloomUser(BaseModel):
     username: str
 
     def __init__(self, id: dict, username: str):
-        super().__init__(id=id["id"], username=username)
+        super().__init__(id=str(id["id"]), username=username)
