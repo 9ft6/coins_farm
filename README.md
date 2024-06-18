@@ -29,6 +29,9 @@ Implemented:
    Create a directory named accounts/ in the root of the project and add files
 
 4. **Run the local account server in one terminal**:
+   ```bash
+   make run-server
+   ```
 
 5. **Run the local bots in different terminals**:
    ```bash
