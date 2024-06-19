@@ -42,11 +42,12 @@ Pressing F4 allows you to enter a Morse phrase. Note that the phrase is not disp
 
 ## Adding Accounts
 
-1. Log in to [Telegram Web](https://web.telegram.org/).
-2. Press **Shift + Ctrl + I** or **F12** to open the developer console.
-3. Select `Session Storage` on the left.
-4. Copy the value of `__telegram__initParams`, a string starting with `query_id=`.
-5. Paste it into a file in the `accounts/hamster_kombat` directory, with one account per line.
+1. Open telegram desktop. Go to Settings - Advanced - Experimental settings - Enable webview inspecting
+2. Log in to [Telegram Web](https://web.telegram.org/).
+3. Press **Shift + Ctrl + I** or **F12** to open the developer console.
+4. Select `Session Storage` on the left.
+5. Copy the value of `__telegram__initParams`, a string starting with `query_id=`.
+6. Paste it into a file in the `accounts/hamster_kombat` directory, with one account per line.
 
 <p align="center">
   <img src="https://github.com/9ft6/hamster_farm/raw/media/pics/hamster_debugger.png" alt="User Interface">
