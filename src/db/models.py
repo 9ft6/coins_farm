@@ -84,5 +84,4 @@ class Account(BaseModel):
         self.init_datas[slug] = data
 
     def set_tokens(self, slug: str, tokens: Tokens):
-        print(tokens)
         self.tokens[slug] = tokens

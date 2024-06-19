@@ -7,7 +7,7 @@ from fake_useragent import UserAgent
 from clients.accounts import accounts
 from config import cfg
 from core.api import BaseAPI
-from core.requests import Headers, Request
+from core.requests import Headers
 from core.panel import BasePanel
 from core.state import BaseClientConfig, BaseState
 from db.accounts import Account, Tokens
@@ -28,19 +28,23 @@ class BaseClient:
     query: str
     account: Account
 
+    refresh_lock: bool = False
+
     def __init__(self, id: int, account: Account):
         self.id = id
         self.account = account
+        self.update_headers()
         self.query = account.query(self.slug)
         self.state = self.state_class()()
         self.cfg = self.cfg_class()()
-        self.update_headers()
 
     def __str__(self):
         return f"{self.id}: {self.api}"
 
     def update_headers(self) -> Headers:
-        self.headers = self.start_headers()
+        if not hasattr(self, "headers"):
+            self.headers = Headers()
+        self.headers.update(self.start_headers())
 
     def start_headers(self) -> Headers:
         attrs = {
@@ -61,6 +65,8 @@ class BaseClient:
     async def run(self):
         async with aiohttp.ClientSession() as session:
             self.api = self.api_class()(session, self)
+            self.api.info(f"started {self.id}")
+
             await self.make_auth()
             await self.before_run()
             while True:
@@ -70,6 +76,25 @@ class BaseClient:
                 self.api.debug(f"Going sleep {to_sleep} secs")
                 await asyncio.sleep(to_sleep)
 
+    async def refresh_auth(self):
+        if token := self.account.refresh(self.slug):
+            if self.refresh_lock:
+                print("Waiting Refreshing token")
+                while self.refresh_lock:
+                    print("already refreshing. wait...")
+                    await asyncio.sleep(1)
+
+                return
+
+            print("refreshing token")
+            self.refresh_lock = True
+            response = await self.api.refresh_auth(token)
+            # print(response)
+            await self.apply_tokens(response.data)
+            self.refresh_lock = False
+        else:
+            await self.make_auth()
+
     async def make_auth(self):
         if self.account.access(self.slug):
             return
@@ -77,9 +102,13 @@ class BaseClient:
         response = await self.api.auth(self.query)
         if response.success:
             tokens = self.get_tokens_from_response(response)
-            self.account.set_tokens(self.slug, Tokens(**tokens))
-            await accounts.add_tokens(self.account.id, self.slug, tokens)
-            self.update_headers()
+            await self.apply_tokens(tokens)
+
+    async def apply_tokens(self, tokens):
+        print(f'Applying  tokens {tokens}')
+        self.account.set_tokens(self.slug, Tokens(**tokens))
+        await accounts.add_tokens(self.account.id, self.slug, tokens)
+        self.update_headers()
 
     def get_tokens_from_response(self, response):
         return response.data["token"]

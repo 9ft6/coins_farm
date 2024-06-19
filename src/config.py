@@ -7,10 +7,11 @@ class MainConfig(BaseSettings):
         env_file = "../env/.env"
         env_file_encoding = 'utf-8'
 
-    tokens_dir: Path = Path("../tokens")
+    accounts_dir: Path = Path("../accounts")
     accounts_file: Path = Path("../data/accounts.pickle")
 
     # CUI
+    disable_screen_clear: bool = False  # debug option
     cui_last_logs: int = 30  # last logs line count in terminal
     cui_refresh: int = 2  # secs
     use_emoji: bool = True

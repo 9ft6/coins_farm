@@ -15,14 +15,15 @@ class Headers(dict):
 
 class Response(BaseModel):
     data: Any = None
-    status: int
-    error: str = None
+    status: int | None = None
+    error: str | None = None
     success: bool = False
 
 
 class ErrorResponse(Response):
     def __init__(self, response, error):
-        super().__init__(error=error, status=response.status)
+        status = response and response.status or response
+        super().__init__(error=error, status=status)
 
 
 class SuccessResponse(Response):
@@ -34,6 +35,7 @@ class SuccessResponse(Response):
 
 class Request(BaseModel):
     url: str | None = None
+    log_message: str | None = None
     base_url: str
     path: str
     method: HTTPMethod
@@ -48,8 +50,6 @@ class Request(BaseModel):
     async def do(self):
         if response := await self._make_request():
             return response
-        else:
-            return
 
     def get_kwargs(self):
         return {
@@ -95,6 +95,9 @@ class Request(BaseModel):
 
     def payload(self):
         ...
+
+    def get_log_message(self):
+        return self.log_message
 
 
 class GetRequest(Request):

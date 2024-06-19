@@ -5,9 +5,11 @@ import random
 from core.client import BaseClient
 from services.bloom.api import BloomAPI
 from services.bloom.state import BloomState, BloomConfig
+from services.bloom.logger import logger, CustomLogger
 
 
 class BloomClient(BaseClient):
+    logger: CustomLogger = logger
     slug: str = "bloom"
     api: BloomAPI
     state: BloomState
@@ -17,7 +19,13 @@ class BloomClient(BaseClient):
     origin: str = "https://telegram.blum.codes"
 
     def __str__(self):
-        return f"{self.token}"
+        st = self.state
+        stats = st.get_stats()
+        name = st.user and st.user.username or ""
+        balance = st.balance
+        is_selected = ">>" if self.id == self.panel.cursor else "  "
+        return (f"{is_selected}{self.id:0>2} {name:<19} {balance:>5}$ "
+                f"{st.play_passes=} {stats}")
 
     def api_class(self):
         return BloomAPI
@@ -30,7 +38,6 @@ class BloomClient(BaseClient):
 
     async def before_run(self):
         await self.get_user()
-        await self.update_balance()
 
     async def get_user(self):
         self.state.set_user((await self.api.me()).data)
@@ -44,17 +51,18 @@ class BloomClient(BaseClient):
         await self.api.balance()
 
     async def check_friend(self) -> bool:
-        return (await self.api.check_friend()).data["canClaim"]
+        if (response := await self.api.check_friend()) and response.success:
+            return response.data["canClaim"]
 
     async def need_to_farm(self) -> bool:
         balance = await self.update_balance()
         if farming_info := balance.get("farming"):
-            end_time_s = farming_info['endTime'] / 1000.0
-            diff = dt.fromtimestamp(end_time_s, timezone.utc) - dt.utcnow()
-            return diff.total_seconds() // 3600 < 0
+            diff = farming_info['endTime'] / 1000 - dt.utcnow().timestamp()
+            return diff < 0
 
     async def claim_game(self, game_id: str) -> bool:
-        response = await self.api.claim_game(game_id, 2000)
+        points = random.randint(1400, 2000)
+        response = await self.api.claim_game(game_id, points)
         return response.data["message"] == "game session not finished"
 
     async def run_pipeline(self):
@@ -64,9 +72,10 @@ class BloomClient(BaseClient):
             await self.api.claim_farming()
             await self.api.start_farming()
 
-        if await self.check_friend():
-            await self.api.claim_friend()
+        # if await self.check_friend():
+        #     await self.api.claim_friend()
 
+        print(self.state.has_pass())
         while self.state.has_pass():
             game_id = (await self.api.play_game()).data.get()
             await asyncio.sleep(random.randint(5, 12) / 10)

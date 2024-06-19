@@ -103,6 +103,7 @@ class HamsterClient(BaseClient):
 
     async def do_taps(self, taps: int = 1, only_update: bool = False):
         result = await self.api.tap(taps, taps)
+        self.state.stat_taps(taps)
         if result.success:
             self.state.update(result)
             if only_update:
@@ -162,6 +163,9 @@ class HamsterClient(BaseClient):
 
     async def get_available_upgrades(self, max_price=2_000_000):
         result = await self.api.get_upgrades()
+        update = {"dailyCombo": result.data.get("dailyCombo")}
+        self.state.update(update)
+
         if result.success:
             filtered = filter(
                 lambda x: (
@@ -201,6 +205,9 @@ class HamsterClient(BaseClient):
         result = await self.api.buy_upgrade(upgrade)
         if result.success:
             self.state.update(result)
+            self.state.stat_upgrades()
+            self.state.stat_upgrades_price(upgrade["price"])
+            self.state.stat_coins_per_hour(upgrade["profitPerHourDelta"])
         return result.success
 
     async def enter_passphrase(self, passphrase: str):

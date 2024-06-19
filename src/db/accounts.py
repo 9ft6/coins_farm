@@ -51,7 +51,7 @@ class Accounts:
             print("Accounts file damaged.")
 
     async def load_default(self):
-        for file in cfg.tokens_dir.iterdir():
+        for file in cfg.accounts_dir.iterdir():
             if file.is_file():
                 for init_data in self._load_tokens(file):
                     data = InitData.from_string(init_data)

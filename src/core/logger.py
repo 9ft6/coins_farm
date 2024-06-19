@@ -51,6 +51,9 @@ class CustomLogger:
         self.show_main_screen = value
 
     def clear(self):
+        if cfg.disable_screen_clear:
+            return
+
         print("\033[H\033[J", end="")
 
     def show(self):

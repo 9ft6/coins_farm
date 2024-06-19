@@ -1,9 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Extra
 
 
 class BloomUser(BaseModel):
     id: str
     username: str
 
-    def __init__(self, id: dict, username: str):
-        super().__init__(id=str(id["id"]), username=username)
+    class Config:
+        extra = Extra.ignore
+
+    def __init__(self, id: dict, username: str, **kwargs):
+        super().__init__(id=str(id["id"]), username=username, **kwargs)

@@ -8,82 +8,34 @@ class BloomAPI(BaseAPI):
     logger: CustomLogger = logger
 
     async def me(self):
-        self.debug("Getting user info")
-        response = await MeRequest(self).do()
-        if response.success:
-            return Ok(data=response.data)
-        else:
-            return Error(error=f"Bad status: {response.status}")
+        return await self.fetch(MeRequest)
 
     async def balance(self):
-        self.debug("Getting balance")
-        response = await BalanceRequest(self).do()
-        if response.success:
-            return Ok(data=response.data)
-        else:
-            return Error(error=f"Bad status: {response.status}")
+        return await self.fetch(BalanceRequest)
 
     async def check_daily(self):
-        self.debug("Checking daily")
-        response = await CheckDailyRequest(self).do()
-        if response.success:
-            return Ok(data=response.data)
-        else:
-            return Error(error=f"Bad status: {response.status}")
+        return await self.fetch(CheckDailyRequest)
 
     async def claim_farming(self):
-        self.debug("Claim farming")
-        response = await ClaimFarmingRequest(self).do()
-        if response.success:
-            return Ok(data=response.data)
-        else:
-            return Error(error=f"Bad status: {response.status}")
+        return await self.fetch(ClaimFarmingRequest)
 
     async def start_farming(self):
-        self.debug("Start Farming")
-        response = await StartFarmingRequest(self).do()
-        if response.success:
-            return Ok(data=response.data)
-        else:
-            return Error(error=f"Bad status: {response.status}")
+        return await self.fetch(StartFarmingRequest)
 
     async def check_friend(self):
-        self.debug("Checking friend")
-        response = await CheckFriendRequest(self).do()
-        if response.success:
-            return Ok(data=response.data)
-        else:
-            return Error(error=f"Bad status: {response.status}")
+        return await self.fetch(CheckFriendRequest)
 
     async def claim_friend(self):
-        self.debug("Claim friend")
-        response = await ClaimFriendRequest(self).do()
-        if response.success:
-            return Ok(data=response.data)
-        else:
-            return Error(error=f"Bad status: {response.status}")
+        return await self.fetch(ClaimFriendRequest)
 
     async def play_game(self):
-        self.debug("Playing game")
-        response = await PlayGameRequest(self).do()
-        if response.success:
-            return Ok(data=response.data)
-        else:
-            return Error(error=f"Bad status: {response.status}")
+        return await self.fetch(PlayGameRequest)
 
     async def claim_game(self, game_id: str, points: int):
-        self.debug(f"Claiming game {game_id=}")
-        response = await ClaimGameRequest(self, id=game_id, points=points).do()
-        if response.success:
-            return Ok(data=response.data)
-        else:
-            return Error(error=f"Bad status: {response.status}")
+        return await self.fetch(ClaimGameRequest, id=game_id, points=points)
 
     async def auth(self, query: str):
-        self.debug(f"Authenticate...")
-        response = await AuthRequest(self, query=query).do()
-        if response.success:
-            return Ok(data=response.data)
-        else:
-            return Error(error=f"Bad status: {response.status}")
+        return await self.fetch(AuthRequest, query=query)
 
+    async def refresh_auth(self, token: str):
+        return await self.fetch(RefreshAuthRequest, token=token)
