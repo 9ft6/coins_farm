@@ -1,5 +1,4 @@
 from core.api import BaseAPI
-from core.models import *
 from services.bloom.requests import *
 from services.bloom.logger import logger, CustomLogger
 

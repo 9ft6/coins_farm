@@ -35,7 +35,7 @@ class HamsterConfig(BaseClientConfig):
     need_upgrade_depends: bool = True
     auto_upgrade: bool = False
     auto_task: bool = False
-    auto_depends: bool = True
+    auto_depends: bool = False
 
 
 class HamsterState(BaseState, Statistics):
