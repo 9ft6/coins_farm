@@ -36,9 +36,10 @@ add default user ids to data/users/admins or data/users/users
    ```
    
 3. **Settings**:
-   add telegram bot token to ```env/.env``` as you can see in ```env/.env.example```
-   add default user telegram ids to ```data/users/admins``` or ```data/users/users``` files
-   Create a directory named accounts/ in the root of the project and add files with game slugs (bloom, hamster_kombat). Learn more at game module pages.
+   1. add telegram bot token to ```env/.env``` as you can see in ```env/.env.example```
+   2. add default user telegram ids to ```data/users/admins``` or ```data/users/users``` files
+   3. Create a directory named accounts/ in the root of the project and add files with game slugs (bloom, hamster_kombat). Learn more at game module pages.
+   
 
 4. **Run the local account server in one terminal**:
    ```bash
