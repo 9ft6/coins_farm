@@ -23,6 +23,11 @@ class Runner:
     def __iter__(self):
         return iter(self.clients.values())
 
+    def get_client_by_num(self, num: int) -> BaseClient:
+        for c in self:
+            if c.num == num:
+                return c
+
     def run(self):
         self.panel = self.panel_class(self)
         asyncio.run(self._run())

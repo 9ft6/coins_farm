@@ -200,7 +200,7 @@ class BasePanel:
                 value = getattr(client.cfg, name)
                 setattr(client.cfg, name, not value)
         else:
-            client = self.runner.clients[self.cursor]
+            client = self.runner.get_client_by_num(self.cursor)
             value = getattr(client.cfg, name)
             setattr(client.cfg, name, not value)
 
