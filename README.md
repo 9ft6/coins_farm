@@ -4,7 +4,11 @@
 
 ## Project Overview
 
-This project started as an evening coding session over a beer to explore the mechanics of the hyped-up "Hamster Kombat." Now, it's an attempt to create a unified farm for similar projects. To work with it, you need to run the local server and bot modules located in `src/services`. Each module is essentially an API client with logic for auto-leveling, implementing useful functions, and displaying information in the terminal. In the coming days, a Telegram bot will be developed to manage the system. It will help quickly add and maintain accounts, as well as monitor statistics and logs.
+This project started as an evening coding session over a beer to explore the mechanics of the hyped-up "Hamster Kombat." Now, it's an attempt to create a unified farm for similar projects. To work with it, you need to run the local server and bot modules located in `src/services`. Each module is essentially an API client with logic for auto-leveling, implementing useful functions, and displaying information in the terminal. Currently, there is a Telegram bot that allows users to verify themselves and administrators to approve user participation in the system. The bot supports hot account additions without needing to restart the runners. The system architecture is now microservice-based and includes the following components:
+
+- Runners: Each runner is dedicated to managing a specific game.
+- Telegram bot: Manages user registration and verification processes.
+- Central FastAPI server: Manages account and user databases, communicates with the bot, and has WebSocket support for communication with the runners.
 
 Implemented:
 - [Hamster Kombat](https://github.com/9ft6/hamster_farm/tree/main/src/services/hamster_kombat/README.md)
@@ -33,7 +37,12 @@ Implemented:
    make run-server
    ```
 
-5. **Run the local bots in different terminals**:
+5. **Run the telegram bot**:
+   ```bash
+   make run-bot
+   ```
+
+6. **Run the local bots in different terminals**:
    ```bash
    make run-bloom
    ```
