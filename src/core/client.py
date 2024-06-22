@@ -4,13 +4,12 @@ import random
 import aiohttp
 from fake_useragent import UserAgent
 
-from temp.clients import accounts
 from config import cfg
 from core.api import BaseAPI
 from core.requests import Headers
 from core.panel import BasePanel
 from core.state import BaseClientConfig, BaseState
-from db.accounts import Account, Tokens
+from db.accounts import Account, Tokens, accounts
 
 
 class BaseClient:
