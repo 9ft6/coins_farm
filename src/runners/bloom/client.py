@@ -1,11 +1,11 @@
 import asyncio
-from datetime import datetime as dt, timezone
+from datetime import datetime as dt
 import random
 
 from core.client import BaseClient
-from services.bloom.api import BloomAPI
-from services.bloom.state import BloomState, BloomConfig
-from services.bloom.logger import logger, CustomLogger
+from runners.bloom.api import BloomAPI
+from runners.bloom.state import BloomState, BloomConfig
+from runners.bloom.logger import logger, CustomLogger
 
 
 class BloomClient(BaseClient):
@@ -23,8 +23,8 @@ class BloomClient(BaseClient):
         stats = st.get_stats()
         name = st.user and st.user.username or ""
         balance = st.balance
-        is_selected = ">>" if self.id == self.panel.cursor else "  "
-        return (f"{is_selected}{self.id:0>2} {name:<19} {balance:>5}$ "
+        is_selected = ">>" if self.num == self.panel.cursor else "  "
+        return (f"{is_selected}{self.num:0>2} {name:<19} {balance:>5}$ "
                 f"{st.play_passes=} {stats}")
 
     def api_class(self):
@@ -75,9 +75,9 @@ class BloomClient(BaseClient):
         # if await self.check_friend():
         #     await self.api.claim_friend()
 
-        print(self.state.has_pass())
         while self.state.has_pass():
-            game_id = (await self.api.play_game()).data.get()
+            response = await self.api.play_game()
+            game_id = response.data.get("gameId")
             await asyncio.sleep(random.randint(5, 12) / 10)
 
             while self.claim_game(game_id):

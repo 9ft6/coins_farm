@@ -4,7 +4,7 @@ import random
 import aiohttp
 from fake_useragent import UserAgent
 
-from clients.accounts import accounts
+from temp.clients import accounts
 from config import cfg
 from core.api import BaseAPI
 from core.requests import Headers
@@ -26,12 +26,14 @@ class BaseClient:
     origin: str
     token: str = None
     query: str
+    halt: bool = False
     account: Account
 
     refresh_lock: bool = False
 
-    def __init__(self, id: int, account: Account):
-        self.id = id
+    def __init__(self, num: int, account: Account):
+        self.num = num
+        self.id = account.id
         self.account = account
         self.update_headers()
         self.query = account.query(self.slug)
@@ -39,7 +41,7 @@ class BaseClient:
         self.cfg = self.cfg_class()()
 
     def __str__(self):
-        return f"{self.id}: {self.api}"
+        return f"{self.num} - {self.id}: {self.api}"
 
     def update_headers(self) -> Headers:
         if not hasattr(self, "headers"):
@@ -65,16 +67,23 @@ class BaseClient:
     async def run(self):
         async with aiohttp.ClientSession() as session:
             self.api = self.api_class()(session, self)
-            self.api.info(f"started {self.id}")
+            self.api.info(f"started {self.num} {self.id}")
 
             await self.make_auth()
             await self.before_run()
-            while True:
+            while not self.halt:
                 await self.run_pipeline()
 
                 to_sleep = random.randint(*cfg.sleep_time)
                 self.api.debug(f"Going sleep {to_sleep} secs")
-                await asyncio.sleep(to_sleep)
+
+                slept = 0
+                while slept <= to_sleep:
+                    await asyncio.sleep(1)
+                    slept += 1
+                    if self.halt:
+                        print(f"{self.num} - {self.id} halted")
+                        break
 
     async def refresh_auth(self):
         if token := self.account.refresh(self.slug):
@@ -89,7 +98,6 @@ class BaseClient:
             print("refreshing token")
             self.refresh_lock = True
             response = await self.api.refresh_auth(token)
-            # print(response)
             await self.apply_tokens(response.data)
             self.refresh_lock = False
         else:
@@ -130,3 +138,7 @@ class BaseClient:
 
     def set_panel(self, panel):
         self.panel = panel
+
+    @classmethod
+    def get_slug(cls):
+        return cls.slug

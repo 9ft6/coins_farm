@@ -12,6 +12,19 @@ This module is a bot system for automatically claiming shitcoins.
 For it to work correctly, the account server must be running.
 You can start it by executing `make run-server` (see details on the main page).
 
+
+> **Microservice Architecture in Development**
+> I am currently fine-tuning a microservice architecture. It will feature a central WebSocket server that integrates microservices, a Telegram bot for management, and game clients. The plan is to implement convenient account addition using the management Telegram bot and provide comprehensive statistics on the performance of the bots.
+> 
+> If you need further adjustments or have more details to include, feel free to let me know!
+
+
+
+
+
+
+
+
 ## Bot Pipeline
 
 - The bot runs every 2-4 minutes.

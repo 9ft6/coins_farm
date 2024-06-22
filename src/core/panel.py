@@ -4,7 +4,7 @@ from functools import wraps
 from colorama import Fore, Style
 from sshkeyboard import listen_keyboard_manual
 
-from services.hamster_kombat.logger import logger
+from runners.hamster_kombat.logger import logger
 
 
 def input_wrapper(f):
@@ -148,12 +148,13 @@ class BasePanel:
     cursor: int = -1
     ms: MultiSelect | None = None
 
-    def __init__(self, clients):
-        self.clients = clients
+    def __init__(self, runner):
+        self.runner = runner
         self.update_logger_line()
-        [c.set_panel(self) for c in clients]
+        [c.set_panel(self) for c in runner]
 
     async def run(self):
+        [c.set_panel(self) for c in self.runner]
         await listen_keyboard_manual(
             on_release=self.on_press,
             delay_second_char=0.1,
@@ -165,41 +166,41 @@ class BasePanel:
                 if self.cursor > - 1:
                     self.cursor -= 1
                 else:
-                    self.cursor = len(self.clients) - 1
+                    self.cursor = self.runner.count() - 1
             case "down":
-                if self.cursor < len(self.clients) - 1:
+                if self.cursor < self.runner.count() - 1:
                     self.cursor += 1
                 else:
                     self.cursor = - 1
 
     def map(self, func, *args, **kwargs):
-        return [getattr(c, func)(*args, **kwargs) for c in self.clients]
+        return [getattr(c, func)(*args, **kwargs) for c in self.runner]
 
     async def async_map(self, coro, *args, **kwargs):
-        tasks = [getattr(c, coro)(*args, **kwargs) for c in self.clients]
+        tasks = [getattr(c, coro)(*args, **kwargs) for c in self.runner]
         return await asyncio.gather(*tasks)
 
     def exec(self, func, *args, **kwargs):
         if self.cursor == -1:
             self.map(func, *args, **kwargs)
         else:
-            client = self.clients[self.cursor]
+            client = self.runner.clients[self.cursor]
             getattr(client, func)(*args, **kwargs)
 
     async def async_exec(self, coro, *args, **kwargs):
         if self.cursor == -1:
             await self.async_map(coro, *args, **kwargs)
         else:
-            client = self.clients[self.cursor]
+            client = self.runner.clients[self.cursor]
             await getattr(client, coro)(*args, **kwargs)
 
     def switch_cfg_to_clients(self, name):
         if self.cursor == -1:
-            for client in self.clients:
+            for client in self.runner:
                 value = getattr(client.cfg, name)
                 setattr(client.cfg, name, not value)
         else:
-            client = self.clients[self.cursor]
+            client = self.runner.clients[self.cursor]
             value = getattr(client.cfg, name)
             setattr(client.cfg, name, not value)
 

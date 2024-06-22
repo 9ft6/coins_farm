@@ -8,7 +8,7 @@ This project started as an evening coding session over a beer to explore the mec
 
 Implemented:
 - [Hamster Kombat](https://github.com/9ft6/hamster_farm/tree/main/src/services/hamster_kombat/README.md)
-- [Bloom](https://github.com/9ft6/hamster_farm/tree/main/src/services/bloom/README.md) *soon
+- [Bloom](https://github.com/9ft6/hamster_farm/tree/main/src/services/bloom/README.md)
 
 ## Installation and Launch
 

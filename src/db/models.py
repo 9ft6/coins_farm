@@ -1,7 +1,55 @@
 import urllib.parse
 import json
+from typing import Literal
 
 from pydantic import BaseModel, Extra
+
+
+Role = Literal["admin", "user"]
+roles: list[Role] = ["admin", "user"]
+Status = Literal["approved", "wait_approve", "declined"]
+statuses: list[Status] = ["approved", "wait_approve", "declined"]
+
+
+class TelegramUser(BaseModel):
+    id: int
+    role: Role
+    status: Status
+    need_update_info: bool = False
+
+    # tg fields
+    first_name: str | None = None
+    last_name: str | None = None
+    language_code: str | None = None
+    username: str | None = None
+    is_premium: bool | None = None
+    is_bot: bool | None = None
+
+    def is_admin(self):
+        return self.role == "admin"
+
+
+class UpdateTelegramUserRequest(BaseModel):
+    need_update_info: bool = False
+    first_name: str | None = None
+    last_name: str | None = None
+    language_code: str | None = None
+    username: str | None = None
+    is_premium: bool | None = None
+    is_bot: bool | None = None
+
+
+class ApprovedUser(TelegramUser):
+    status: Status = "approved"
+
+
+class DefaultUser(ApprovedUser):
+    need_update_info: bool = True
+
+
+class NewTelegramUser(TelegramUser):
+    status: Status = "wait_approve"
+    role: Role = "user"
 
 
 class Tokens(BaseModel):

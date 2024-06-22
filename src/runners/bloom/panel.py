@@ -2,7 +2,7 @@ import aioconsole
 import asyncio
 
 from core.panel import MultiSelect, input_wrapper, BasePanel
-from services.hamster_kombat.logger import logger
+from runners.hamster_kombat.logger import logger
 
 
 class ConsoleControlPanel(BasePanel):

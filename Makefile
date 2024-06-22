@@ -23,3 +23,6 @@ run-hamster: ## Run HamsterKombat
 
 run-bloom: ## Run Bloom
 	$(activate) && cd src && python app.py --bloom
+
+run-bot: ## Run Bloom
+	$(activate) && cd src && python app.py --bot

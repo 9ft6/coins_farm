@@ -3,8 +3,8 @@ import random
 
 from core import utils
 from core.client import BaseClient
-from services.hamster_kombat.api import HamsterAPI
-from services.hamster_kombat.state import HamsterState, HamsterConfig
+from runners.hamster_kombat.api import HamsterAPI
+from runners.hamster_kombat.state import HamsterState, HamsterConfig
 
 
 class HamsterClient(BaseClient):
@@ -36,9 +36,9 @@ class HamsterClient(BaseClient):
         task_flag = utils.enable_emoji(self.cfg.auto_task)
         depends_flag = utils.enable_emoji(self.cfg.auto_depends)
         upgrades_flag = utils.enable_emoji(self.cfg.auto_upgrade)
-        is_selected = ">>" if self.id == self.panel.cursor else "  "
+        is_selected = ">>" if self.num == self.panel.cursor else "  "
         return (
-            f"{is_selected}{self.id:0>2} {name:<19} {balance:>8}$ {coins:<8}"
+            f"{is_selected}{self.num:0>2} {name:<19} {balance:>8}$ {coins:<8}"
             f" + {cph}/h (+ {cph_improved}) {taps:<11} {upgrades}\n"
             f"  {self.state.user_level() or '':O>2} lvl          "
             f"          {combo_flag} combo {morse_flag} morse {task_flag} "
@@ -161,7 +161,7 @@ class HamsterClient(BaseClient):
                     u["level"] += 1
                     await asyncio.sleep(0.5)
 
-    async def get_available_upgrades(self, max_price=2_000_000):
+    async def get_available_upgrades(self, max_price=5_000_000):
         result = await self.api.get_upgrades()
         update = {"dailyCombo": result.data.get("dailyCombo")}
         self.state.update(update)
@@ -187,10 +187,11 @@ class HamsterClient(BaseClient):
             return upgrades
 
     async def upgrade(self):
-        if upgrades := await self.get_available_upgrades():
-            balance = self.state.balance()
-            upgrades = sorted(upgrades, key=lambda x: x["ppp"], reverse=True)
-            for upgrade in list(upgrades)[-4:]:
+        for _ in range(4):
+            if upgrades := await self.get_available_upgrades():
+                balance = self.state.balance()
+                upgrades = sorted(upgrades, key=lambda x: x["ppp"], reverse=True)
+                upgrade = list(upgrades)[-1]
                 if upgrade["price"] <= balance:
                     await self.buy_upgrade(upgrade)
                     await asyncio.sleep(0.1)

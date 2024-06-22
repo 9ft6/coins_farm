@@ -1,7 +1,7 @@
 from core.models import *
 from core.api import BaseAPI
-from services.hamster_kombat.requests import *
-from services.hamster_kombat.logger import logger, CustomLogger
+from runners.hamster_kombat.requests import *
+from runners.hamster_kombat.logger import logger, CustomLogger
 
 
 class HamsterAPI(BaseAPI):

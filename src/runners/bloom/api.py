@@ -1,6 +1,6 @@
 from core.api import BaseAPI
-from services.bloom.requests import *
-from services.bloom.logger import logger, CustomLogger
+from runners.bloom.requests import *
+from runners.bloom.logger import logger, CustomLogger
 
 
 class BloomAPI(BaseAPI):

@@ -12,7 +12,7 @@ class BaseAPI(LoggerMixin):
         self.client = client
 
     def log_id(self):
-        return self.client.id
+        return self.client.num
 
     async def fetch(self, request, *args, **kwargs):
         request = request(self, *args, **kwargs)

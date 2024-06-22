@@ -1,12 +1,29 @@
+import os  # noqa
+os.environ[
+    "LOGURU_FORMAT"
+] = "{time:DD.MM.YY HH:mm:s} [<lvl>{level:^10}</lvl>] <lvl>{message}</lvl>"  # noqa
+os.environ["LEVEL"] = "DEBUG"  # noqa
+
 import asyncio
 from datetime import datetime
 from time import monotonic
 
-from colorama import init, Fore, Style
+from colorama import init as init_colorama, Fore, Style
+from loguru import logger
 
 from config import cfg
 
-init()
+
+class SubLogger:
+    def __init__(self, name: str, logger: logger = logger):
+        self.info = lambda x: logger.info(f"[{name:^8}] {x}")
+        self.debug = lambda x: logger.debug(f"[{name:^8}] {x}")
+        self.warning = lambda x: logger.warning(f"[{name:^8}] {x}")
+        self.error = lambda x: logger.error(f"[{name:^8}] {x}")
+        self.success = lambda x: logger.success(f"[{name:^8}] {x}")
+
+
+init_colorama()
 
 
 def get_color_by_level(level: str):
@@ -28,16 +45,15 @@ def get_color_by_id(id: int):
 
 
 class CustomLogger:
-    clients: list
     log_lines: list[str] = []
     last_logs: dict[int, list[str]] = {}
     last_screen: str = ""
     panel_line: str = ""
     show_main_screen: bool = True
+    halt: bool = False
 
-    async def run(self, clients):
-        self.clients = clients
-
+    async def run(self, runner):
+        self.runner = runner
         while True:
             t0 = monotonic()
 
@@ -61,10 +77,10 @@ class CustomLogger:
         if self.panel_line:
             lines.append(self.panel_line)
 
-        for client in self.clients:
-            if logs := self.get_last_logs(client.id):
+        for client in self.runner:
+            if logs := self.get_last_logs(client.num):
                 logs = '\n'.join(logs)
-                lines.append(self.get_line(client.id, f"{client}\n{logs}\n"))
+                lines.append(self.get_line(client.num, f"{client}\n{logs}\n"))
 
         lines.append("")
         lines.extend(self.log_lines[-cfg.cui_last_logs:])

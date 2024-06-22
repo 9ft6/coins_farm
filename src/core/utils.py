@@ -1,6 +1,8 @@
 import platform
 import os
 
+from pydantic import BaseModel
+
 from config import cfg
 
 
@@ -36,3 +38,14 @@ def readable(num):
         result = result.replace("-", "- ")
 
     return result
+
+
+def jsonify(v):
+    if isinstance(v, BaseModel):
+        return v.model_dump()
+    if isinstance(v, dict):
+        return {k: jsonify(v) for k, v in v.items()}
+    if isinstance(v, list | tuple | set):
+        return type(v)([jsonify(v) for v in v])
+    else:
+        return v

@@ -1,6 +1,6 @@
 from core.state import BaseState, BaseClientConfig
 from core.requests import Response
-from services.bloom.models import BloomUser, BaseModel
+from runners.bloom.models import BloomUser, BaseModel
 
 
 class Statistics:
