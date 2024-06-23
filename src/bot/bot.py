@@ -103,9 +103,9 @@ class FarmBot:
     async def approve_user(query: types.CallbackQuery):
         user = await users_api.get_user(query.from_user.id)
         slug = query.data.replace("runner_menu_", "")
-        
+
         stat_data = await runners_api.get_stat(slug)
-        stat_message = '\n'.join([s["state"] for s in stat_data.values()])
+        stat_message = '\n\n'.join([s["state"] for s in stat_data.values()])
 
         logger_rn.info(f"Getting '{slug}' info")
         await query.message.answer(

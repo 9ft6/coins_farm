@@ -1,4 +1,3 @@
-from db.models import *
 from clients.base import BaseAPIClient
 from core.logger import SubLogger
 

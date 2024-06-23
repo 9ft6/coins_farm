@@ -1,6 +1,9 @@
 <p align="center">
   <img src="https://github.com/9ft6/hamster_farm/raw/media/pics/cui.png" alt="User Interface">
 </p>
+<p align="center">
+  <img src="https://github.com/9ft6/hamster_farm/raw/media/pics/bot.png" alt="Bot screenshot">
+</p>
 
 ## Project Overview
 
