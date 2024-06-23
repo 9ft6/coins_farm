@@ -25,7 +25,7 @@ def admin_required(handler):
     return wrapper
 
 
-def welcome(handler):
+def authorize(handler):
     """
     decorator to do basic actions to new users
     """

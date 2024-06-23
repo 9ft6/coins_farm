@@ -4,6 +4,7 @@ import random
 import aiohttp
 from fake_useragent import UserAgent
 
+from clients.runners import runners_api
 from config import cfg
 from core.api import BaseAPI
 from core.requests import Headers
@@ -42,7 +43,7 @@ class BaseClient:
     def __str__(self):
         return f"{self.num} - {self.id}: {self.api}"
 
-    def update_headers(self) -> Headers:
+    def update_headers(self):
         if not hasattr(self, "headers"):
             self.headers = Headers()
         self.headers.update(self.start_headers())
@@ -70,6 +71,8 @@ class BaseClient:
 
             await self.make_auth()
             await self.before_run()
+
+            last_stat = None
             while not self.halt:
                 await self.run_pipeline()
 
@@ -78,8 +81,14 @@ class BaseClient:
 
                 slept = 0
                 while slept <= to_sleep:
+                    if (stat := self.get_stat()) and stat != last_stat:
+                        last_stat = stat
+                        data = {"id": self.id, "state": stat}
+                        await runners_api.put_stat(self.slug, data)
+
                     await asyncio.sleep(1)
                     slept += 1
+
                     if self.halt:
                         print(f"{self.num} - {self.id} halted")
                         break
@@ -141,3 +150,6 @@ class BaseClient:
     @classmethod
     def get_slug(cls):
         return cls.slug
+
+    def get_stat(self):
+        return {"huilo": "kto"}

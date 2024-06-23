@@ -18,6 +18,7 @@ class HamsterClient(BaseClient):
     origin: str = "https://hamsterkombat.io"
 
     def __str__(self):
+        # TODO: move that shit to state class
         balance_raw = int(self.state.balance())
         taps = self.state.taps_count()
         name = self.state.username()
@@ -44,6 +45,41 @@ class HamsterClient(BaseClient):
             f"          {combo_flag} combo {morse_flag} morse {task_flag} "
             f"tasks {upgrades_flag} upgrades: {depends_flag} depends"
         )
+
+    def get_stat(self):
+        # TODO: and that shit too
+        '''
+        O8 lvl Gipsy Mickie            3.4m$ (+ 209)
+        + 756k/h (+ 0) 5301/9000   UPG: 0/0$
+        🟢 combo 🔴 morse 🔴 tasks 🔴 upgrades: 🔴 depends
+        '''
+        level = f"{self.state.user_level() or '':O>2} lvl"
+        balance_raw = int(self.state.balance())
+        balance = utils.readable(balance_raw)
+        coins_raw = balance_raw - self.state.start_balance
+        coins = utils.readable(coins_raw)
+        prefix = '+' if coins_raw > 0 else ""
+        coins = f"({prefix} {coins})"
+        cph = utils.readable(self.state.coins_per_hour())
+        cph_improved = utils.readable(self.state.stat["coins_per_hour"])
+        taps = self.state.taps_count()
+        upg_count = self.state.stat["upgrades"]
+        upg_price = utils.readable(self.state.stat["upgrades_price"])
+        upgrades = f"UPG: {upg_count}/{upg_price}$"
+        morse_flag = utils.enable_emoji(self.state.has_morse())
+        combo_flag = utils.enable_emoji(self.state.has_combo())
+        task_flag = utils.enable_emoji(self.cfg.auto_task)
+        depends_flag = utils.enable_emoji(self.cfg.auto_depends)
+        upgrades_flag = utils.enable_emoji(self.cfg.auto_upgrade)
+        view = (
+            "<code>"
+            f"{level} {self.state.username()} {balance:>8}$ {coins:<8}\n"
+            f"+ {cph}/h (+ {cph_improved}) {taps:<11} {upgrades}\n"
+            f"{combo_flag} combo {morse_flag} morse {task_flag} "
+            f"tasks {upgrades_flag} upgrades: {depends_flag} depends"
+            "</code>"
+        )
+        return view
 
     def get_tokens_from_response(self, response):
         return {"access": response.data["authToken"]}

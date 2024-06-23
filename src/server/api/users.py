@@ -1,15 +1,14 @@
-from fastapi import FastAPI, HTTPException, Response
+from fastapi import HTTPException, Response
 
 from core.logger import SubLogger
-from db.models import TelegramUser, UpdateTelegramUserRequest
 from db import Users
+from db.models import TelegramUser, UpdateTelegramUserRequest
 
 users = Users()
-app = FastAPI()
 logger = SubLogger("UsersAPI")
 
 
-def register_users_api(app):
+def register_users_api(app, Server):
     @app.post("/users/")
     async def create_user(user: TelegramUser):
         try:

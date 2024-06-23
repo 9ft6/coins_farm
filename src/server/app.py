@@ -5,22 +5,23 @@ from pydantic import BaseModel
 from config import cfg
 from core import utils
 from core.logger import SubLogger
-from db import accounts, users as users_db
+from db import accounts
 
 bot_logger = SubLogger("bot")
 rn_logger = SubLogger("runner")
 
 valid_slugs = ["bloom", "hamster_kombat"]
 clients = {}
-
+stats = {}  # TODO: use redis
 app = FastAPI(debug=True)
 
 from server.api.users import register_users_api  # noqa
-
-register_users_api(app)
+from server.api.runners import register_runners_api  # noqa
 
 
 class Server:
+    ws: WebSocket = None
+
     @staticmethod
     @app.on_event("startup")
     async def on_startup():
@@ -71,6 +72,7 @@ class Server:
                     # wait commands
                     while True:
                         data = await ws.receive_json()
+                        rn_logger.success(f"Received message: {data}")
                         await asyncio.sleep(1)
 
         except WebSocketDisconnect:
@@ -105,3 +107,22 @@ class Server:
     async def disconnect(ws: WebSocket, message: str):
         await ws.send_text(f"{message} Disconnecting.")
         await ws.close()
+
+    @staticmethod
+    def get_runner(slug: str):
+        return clients[slug]
+
+    @staticmethod
+    def set_stat(slug: str, account_id: int, stat: dict):
+        if slug not in stats:
+            stats[slug] = {account_id: stat}
+        else:
+            stats[slug][account_id] = stat
+
+    @staticmethod
+    def get_stat(slug: str):
+        return stats.get(slug)
+
+
+register_users_api(app, Server)
+register_runners_api(app, Server)
