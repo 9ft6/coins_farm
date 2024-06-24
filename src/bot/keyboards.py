@@ -73,6 +73,10 @@ def runner_menu(slug: str, is_admin: bool):
         callback_data=f"runner_add_account_{slug}"
     ))
     builder.row(InlineKeyboardButton(
+        text="Change game",
+        callback_data=f"/start"
+    ))
+    builder.row(InlineKeyboardButton(
         text="Delete account",
         callback_data=f"runner_delete_account_{slug}"
     ))

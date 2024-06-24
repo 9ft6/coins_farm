@@ -17,7 +17,7 @@ class Users(BaseAPIClient):
 
     async def get_user(self, user_id: int):
         body, status = await self.get(f"{self.base_url}/{user_id}")
-        if isinstance(body, dict):
+        if status == 200:
             return TelegramUser(**body)
 
     async def update_user(self, user: dict):
