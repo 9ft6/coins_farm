@@ -57,11 +57,14 @@ class FarmBot:
         user_id = user_id
         user = await users_api.get_user(user_id)
         name = user.username or user.first_name or user.last_name or "username"
-        accounts = "accs"
+        items = [f"{s:<20} {len(a)} accounts" for s, a in user.added_accounts.items()]
+        accounts = "\n\n".join(items)
         text = (
-            f"Welcome to the bot, {name}!\n"
+            "<code>"
+            f"Welcome to the farm, {name}!\n"
             f"Your role: {user.role}\n"
             f"Yor accounts:\n{accounts}"
+            "</code>"
         )
         logger.success(text)
         await message.answer(text, reply_markup=keyboards.home(user.is_admin()))
@@ -162,8 +165,9 @@ class FarmBot:
         if user.is_admin():
             accounts = list(stat_data.values())
         else:
+            added = user.added_accounts[slug]
             accounts = [a for a in stat_data.values()
-                        if user_id == a["id"] or a["id"] in user.added_accounts]
+                        if user_id == a["id"] or a["id"] in added]
 
         stat_message = '\n\n'.join([s["state"] for s in accounts])
         logger_rn.info(f"Getting '{slug}' info")

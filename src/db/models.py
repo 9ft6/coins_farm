@@ -16,7 +16,8 @@ class TelegramUser(BaseModel):
     role: Role
     status: Status
     need_update_info: bool = False
-    added_accounts: list = []
+    # TODO: remove after migration. must be dict
+    added_accounts: dict | list = {}
 
     # tg fields
     first_name: str | None = None
@@ -28,6 +29,13 @@ class TelegramUser(BaseModel):
 
     def is_admin(self):
         return self.role == "admin"
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+        # TODO: remove after migration
+        if isinstance(self.added_accounts, list):
+            self.added_accounts = {"hamster_kombat": self.added_accounts}
 
 
 class ApprovedUser(TelegramUser):

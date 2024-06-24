@@ -98,9 +98,12 @@ class Users:
         return [user for user in self.items.values()
                 if user.status == "wait_approve"]
 
-    def attach_account(self, user_id: int, account_id: int):
+    def attach_account(self, slug: str, user_id: int, account_id: int):
         if user := self.items.get(user_id):
-            user.added_accounts.append(account_id)
+            if slug in user.added_accounts:
+                user.added_accounts[slug].append(account_id)
+            else:
+                user.added_accounts[slug] = [account_id]
             self.dump()
             return "Ok"
 

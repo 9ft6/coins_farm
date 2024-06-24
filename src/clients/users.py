@@ -39,12 +39,12 @@ class Users(BaseAPIClient):
         if status == 200:
             return [TelegramUser(**u) for u in body]
 
-    async def attach_account(self, user_id: int, account_id: int):
+    async def attach_account(self, slug: str, user_id: int, account_id: int):
         data = {
             "user_id": user_id,
             "account_id": account_id,
         }
-        url = f"{self.base_url}/attach_account/"
+        url = f"{self.base_url}/attach_account/{slug}"
         body, status = await self.post(url, json=data)
         return body
 

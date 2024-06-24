@@ -46,11 +46,11 @@ def register_users_api(app, Server):
     async def approve_user(user_id):
         return Server.users.update(user_id, {"status": "approved"})
 
-    @app.post("/users/attach_account")
-    async def attach_account(body: AttachAccountToUserRequest):
-        logger.info(f"Attach account {body}")
+    @app.post("/users/attach_account/{slug}")
+    async def attach_account(slug: str, body: AttachAccountToUserRequest):
+        logger.info(f"Attach account {slug} {body}")
 
         if body.account_id in Server.accounts.items:
-            return Server.users.attach_account(**body.model_dump())
+            return Server.users.attach_account(slug, **body.model_dump())
         else:
             return {"detail": "account not found"}
