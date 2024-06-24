@@ -57,7 +57,8 @@ class FarmBot:
         user_id = user_id
         user = await users_api.get_user(user_id)
         name = user.username or user.first_name or user.last_name or "username"
-        items = [f"{s:<20} {len(a)} accounts" for s, a in user.added_accounts.items()]
+        added = user.added_accounts.items()
+        items = [f"{s:<20} {len(a)} accounts" for s, a in added]
         accounts = "\n\n".join(items)
         text = (
             "<code>"
@@ -140,7 +141,7 @@ class FarmBot:
         data = await state.get_data()
         account_id = data.get('account_id')
         slug = data.get('slug')
-        response = await users_api.attach_account(user_id, account_id)
+        response = await users_api.attach_account(slug, user_id, account_id)
 
         await message.answer(f"{account_id=}\n{user_id=}\n{slug=}\n{response=}")
 
@@ -167,7 +168,8 @@ class FarmBot:
         else:
             added = user.added_accounts[slug]
             accounts = [a for a in stat_data.values()
-                        if user_id == a["id"] or a["id"] in added]
+                        if user_id == a["id"]
+                        or a["id"] in added]
 
         stat_message = '\n\n'.join([s["state"] for s in accounts])
         logger_rn.info(f"Getting '{slug}' info")

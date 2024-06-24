@@ -69,14 +69,16 @@ def users_list(users: list[TelegramUser]):
 def runner_menu(slug: str, is_admin: bool):
     builder = InlineKeyboardBuilder()
     builder.row(InlineKeyboardButton(
-        text="Add account",
-        callback_data=f"runner_add_account_{slug}"
-    ))
-    builder.row(InlineKeyboardButton(
+        text="🔄",
+        callback_data=f"runner_menu_{slug}"
+    ), InlineKeyboardButton(
         text="Change game",
         callback_data=f"/start"
     ))
     builder.row(InlineKeyboardButton(
+        text="Add account",
+        callback_data=f"runner_add_account_{slug}"
+    ), InlineKeyboardButton(
         text="Delete account",
         callback_data=f"runner_delete_account_{slug}"
     ))
@@ -88,9 +90,8 @@ def runner_menu(slug: str, is_admin: bool):
         builder.row(InlineKeyboardButton(
             text="Attach Account",
             callback_data=f"runner_attach_account_{slug}"
-        ))
-        builder.row(InlineKeyboardButton(
-            text=f"Stop or Start {slug} runner",
+        ), InlineKeyboardButton(
+            text=f"Stop or Start runner",
             callback_data=f"runner_stop_start_{slug}"
         ))
     return builder.as_markup()
