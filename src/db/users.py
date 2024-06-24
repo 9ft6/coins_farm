@@ -101,7 +101,8 @@ class Users:
     def attach_account(self, slug: str, user_id: int, account_id: int):
         if user := self.items.get(user_id):
             if slug in user.added_accounts:
-                user.added_accounts[slug].append(account_id)
+                if account_id not in user.added_accounts[slug]:
+                    user.added_accounts[slug].append(account_id)
             else:
                 user.added_accounts[slug] = [account_id]
             self.dump()

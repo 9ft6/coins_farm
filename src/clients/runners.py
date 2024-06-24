@@ -14,6 +14,11 @@ class Runners(BaseAPIClient):
         body, status = await self.get(url)
         return body
 
+    async def get_guide(self, slug: str):
+        url = f"{self.base_url}/{slug}/guide"
+        body, status = await self.get(url)
+        return body
+
     async def put_stat(self, slug: str, data: dict):
         url = f"{self.base_url}/{slug}/stat"
         await self.post(url, json=data)

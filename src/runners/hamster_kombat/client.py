@@ -1,10 +1,51 @@
 import asyncio
 import random
 
+from config import cfg
 from core import utils
 from core.client import BaseClient
 from runners.hamster_kombat.api import HamsterAPI
 from runners.hamster_kombat.state import HamsterState, HamsterConfig
+
+static = f"https://github.com/9ft6/coins_farm/blob/main/src/server"
+hamster_guide_en = f'''
+<b>Step 1: Install and configure Telegram</b>
+
+1. Download and install the official Telegram app on your computer. <a href="https://desktop.telegram.org/">Download Telegram for PC</a>.
+2. Launch the application and log in.
+3. Go to <b>Settings</b> - <b>Advanced Settings</b> - <b>Experimental Features</b>.
+
+<img src="{static}/tg_settings.png" alt="Telegram Settings">
+
+<b>Step 2: Obtain parameters from the web version</b>
+
+1. Open the web version of Telegram and log in. <a href="https://web.telegram.org/">Go to Telegram Web</a>.
+2. Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>I</kbd> or <kbd>F12</kbd> to open the developer console.
+3. Find the line starting with <code>query_id=</code> and copy it.
+
+<img src="{static}/hamster_debugger.png" alt="Developer Console">
+
+4. Paste the copied line into the field below, and the account will automatically appear in your account list.
+'''
+hamster_guide = f'''
+<b>Шаг 1: Установка и настройка Telegram</b>
+
+1. Скачайте и установите официальное приложение Telegram на ваш компьютер. <a href="https://desktop.telegram.org/">Скачать Telegram для ПК</a>.
+2. Запустите приложение и авторизуйтесь.
+3. Перейдите в раздел <b>Настройки</b> - <b>Продвинутые настройки</b> - <b>Экспериментальные настройки</b>.
+
+<img src="{static}/tg_settings.png" alt="Настройки Telegram">
+
+<b>Шаг 2: Получение параметров из веб-версии</b>
+
+1. Откройте веб-версию Telegram и авторизуйтесь. <a href="https://web.telegram.org/">Перейти в веб-версию Telegram</a>.
+2. Нажмите <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>I</kbd> или <kbd>F12</kbd>, чтобы открыть консоль разработчика.
+3. Найдите строку, начинающуюся с <code>query_id=</code>, и скопируйте её.
+
+<img src="{static}/hamster_debugger.png" alt="Консоль разработчика">
+
+4. Вставьте скопированную строку в поле ниже, и аккаунт автоматически добавится в список ваших аккаунтов.
+'''
 
 
 class HamsterClient(BaseClient):
@@ -48,11 +89,6 @@ class HamsterClient(BaseClient):
 
     def get_stat(self):
         # TODO: and that shit too
-        '''
-        O8 lvl Gipsy Mickie            3.4m$ (+ 209)
-        + 756k/h (+ 0) 5301/9000   UPG: 0/0$
-        🟢 combo 🔴 morse 🔴 tasks 🔴 upgrades: 🔴 depends
-        '''
         level = f"{self.state.user_level() or '':O>2} lvl"
         balance_raw = int(self.state.balance())
         balance = utils.readable(balance_raw)
@@ -61,7 +97,7 @@ class HamsterClient(BaseClient):
         prefix = '+' if coins_raw > 0 else ""
         coins = f"({prefix} {coins})"
         cph = utils.readable(self.state.coins_per_hour())
-        cph_improved = utils.readable(self.state.stat["coins_per_hour"])
+        improved = f"(+ {utils.readable(self.state.stat['coins_per_hour'])}"
         taps = self.state.taps_count()
         upg_count = self.state.stat["upgrades"]
         upg_price = utils.readable(self.state.stat["upgrades_price"])
@@ -73,13 +109,17 @@ class HamsterClient(BaseClient):
         upgrades_flag = utils.enable_emoji(self.cfg.auto_upgrade)
         view = (
             "<code>"
-            f"{level} {self.state.username()} {balance:>8}$ {coins:<8}\n"
-            f"+ {cph}/h (+ {cph_improved}) {taps:<11} {upgrades}\n"
+            f"{level} {self.state.username()} {upgrades}\n"
+            f"{taps:<11} {balance:>8}$ {coins:<8} + {cph}/h {improved}\n"
             f"{combo_flag} combo {morse_flag} morse {task_flag} "
             f"tasks {upgrades_flag} upgrades: {depends_flag} depends"
             "</code>"
         )
         return view
+
+    @staticmethod
+    def get_guide():
+        return hamster_guide
 
     def get_tokens_from_response(self, response):
         return {"access": response.data["authToken"]}

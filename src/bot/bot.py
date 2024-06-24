@@ -64,7 +64,7 @@ class FarmBot:
             "<code>"
             f"Welcome to the farm, {name}!\n"
             f"Your role: {user.role}\n"
-            f"Yor accounts:\n{accounts}"
+            f"Your attached accounts:\n{accounts}"
             "</code>"
         )
         logger.success(text)
@@ -147,6 +147,20 @@ class FarmBot:
 
         await state.clear()
         return await FarmBot.show_runner_menu(slug, msg_user_id, message)
+
+    @staticmethod
+    @dispatcher.callback_query(
+        lambda c: c.data.startswith("runner_add_account_"))
+    @utils.authorize
+    async def add_account(query: types.CallbackQuery):
+        await query.message.answer_photo(
+            photo="http://127.0.0.1:8000/static/tg_settings.png",
+            caption="Настройки Telegram"
+        )
+
+        slug = query.data.replace("runner_add_account_", "")
+        result = await runners_api.get_guide(slug)
+        return query.message.answer(str(result))
 
     @staticmethod
     @dispatcher.callback_query(lambda c: c.data.startswith("runner_menu_"))

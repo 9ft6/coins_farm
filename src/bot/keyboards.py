@@ -72,7 +72,7 @@ def runner_menu(slug: str, is_admin: bool):
         text="🔄",
         callback_data=f"runner_menu_{slug}"
     ), InlineKeyboardButton(
-        text="Change game",
+        text="Main menu",
         callback_data=f"/start"
     ))
     builder.row(InlineKeyboardButton(

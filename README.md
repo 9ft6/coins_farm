@@ -14,8 +14,8 @@ This project started as an evening coding session over a beer to explore the mec
 - Central FastAPI server: Manages account and user databases, communicates with the bot, and has WebSocket support for communication with the runners.
 
 Implemented:
-- [Hamster Kombat](https://github.com/9ft6/hamster_farm/tree/main/src/services/hamster_kombat/README.md)
-- [Bloom](https://github.com/9ft6/hamster_farm/tree/main/src/services/bloom/README.md)
+- [Hamster Kombat](https://github.com/9ft6/hamster_farm/tree/main/src/runners/hamster_kombat/README.md)
+- [Bloom](https://github.com/9ft6/hamster_farm/tree/main/src/runners/bloom/README.md)
 
 ## Installation and Launch
 

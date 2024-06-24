@@ -42,7 +42,10 @@ class Runner:
     async def _run_service(self):
         async with aiohttp.ClientSession() as session:
             async with session.ws_connect(cfg.ws_runner_url()) as ws:
-                await ws.send_json({"slug": self.client.get_slug()})
+                await ws.send_json({
+                    "slug": self.client.get_slug(),
+                    "guide": self.client.get_guide(),
+                })
 
                 while True:
                     if self.halt:

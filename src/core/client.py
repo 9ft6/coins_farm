@@ -151,5 +151,9 @@ class BaseClient:
     def get_slug(cls):
         return cls.slug
 
+    @staticmethod
+    def get_guide():
+        ...
+
     def get_stat(self):
         return {"huilo": "kto"}

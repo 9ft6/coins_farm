@@ -1,5 +1,8 @@
 import asyncio
+from pathlib import Path
+
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from config import cfg
@@ -13,7 +16,11 @@ rn_logger = SubLogger("runner")
 valid_slugs = ["bloom", "hamster_kombat"]
 clients = {}
 stats = {}  # TODO: use redis
+guides = {}
+
 app = FastAPI(debug=True)
+static = str((Path().parent / "server" / "static").resolve())
+app.mount("/static", StaticFiles(directory=static), name="static")
 
 from server.api.users import register_users_api  # noqa
 from server.api.runners import register_runners_api  # noqa
@@ -90,6 +97,7 @@ class Server:
 
         if data["slug"] in valid_slugs:
             clients[data["slug"]] = ws
+            guides[data["slug"]] = data["guide"]
             ws.data = data
             return data
         else:
@@ -124,6 +132,10 @@ class Server:
     @staticmethod
     def get_stat(slug: str):
         return stats.get(slug)
+
+    @staticmethod
+    def get_guide(slug: str):
+        return guides.get(slug)
 
 
 register_users_api(app, Server)
