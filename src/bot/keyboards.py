@@ -82,11 +82,11 @@ def runner_menu(slug: str, is_admin: bool):
     ))
     if is_admin:
         builder.row(InlineKeyboardButton(
-            text=f"Stop or Start {slug} runner",
-            callback_data=f"runner_stop_start_{slug}"
+            text="Attach Account",
+            callback_data=f"runner_attach_account_{slug}"
         ))
         builder.row(InlineKeyboardButton(
-            text="Attach accounts to users",
-            callback_data="runner_attach_accounts_{slug}"
+            text=f"Stop or Start {slug} runner",
+            callback_data=f"runner_stop_start_{slug}"
         ))
     return builder.as_markup()

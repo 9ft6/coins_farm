@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from config import cfg
 from core import utils
 from core.logger import SubLogger
-from db import accounts
+from db import Accounts, Users
 
 bot_logger = SubLogger("bot")
 rn_logger = SubLogger("runner")
@@ -21,11 +21,13 @@ from server.api.runners import register_runners_api  # noqa
 
 class Server:
     ws: WebSocket = None
+    users: Users = Users()
+    accounts: Accounts = Accounts()
 
     @staticmethod
     @app.on_event("startup")
     async def on_startup():
-        await asyncio.gather(accounts.init())
+        await asyncio.gather(Server.accounts.init())
 
     @staticmethod
     @app.websocket(cfg.ws_bot_prefix)
@@ -58,7 +60,7 @@ class Server:
     @staticmethod
     @app.websocket(cfg.ws_runner_prefix)
     async def runner_endpoint(ws: WebSocket):
-        await accounts.init()
+        # await accounts.init()
         rn_logger.info(f"Connecting to Runner... {ws.scope}")
 
         await ws.accept()
@@ -96,7 +98,7 @@ class Server:
     @staticmethod
     async def start_runner(ws: WebSocket, slug: str):
         clients[slug] = ws
-        items = await accounts.get_accounts_by_slug(slug)
+        items = await Server.accounts.get_accounts_by_slug(slug)
         await Server.send(ws, {"items": items, "type": "add_accounts"})
 
     @staticmethod
@@ -115,9 +117,9 @@ class Server:
     @staticmethod
     def set_stat(slug: str, account_id: int, stat: dict):
         if slug not in stats:
-            stats[slug] = {account_id: stat}
+            stats[slug] = {int(account_id): stat}
         else:
-            stats[slug][account_id] = stat
+            stats[slug][int(account_id)] = stat
 
     @staticmethod
     def get_stat(slug: str):

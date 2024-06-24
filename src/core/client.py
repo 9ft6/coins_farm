@@ -10,7 +10,7 @@ from core.api import BaseAPI
 from core.requests import Headers
 from core.panel import BasePanel
 from core.state import BaseClientConfig, BaseState
-from db.accounts import Account, Tokens, accounts
+from db.accounts import Account, Tokens
 
 
 class BaseClient:
@@ -123,7 +123,7 @@ class BaseClient:
     async def apply_tokens(self, tokens):
         print(f'Applying  tokens {tokens}')
         self.account.set_tokens(self.slug, Tokens(**tokens))
-        await accounts.add_tokens(self.account.id, self.slug, tokens)
+        # await accounts.add_tokens(self.account.id, self.slug, tokens)
         self.update_headers()
 
     def get_tokens_from_response(self, response):

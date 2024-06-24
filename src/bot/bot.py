@@ -16,6 +16,15 @@ logger = SubLogger("TGBot")
 logger_rn = SubLogger("runner")
 
 
+from aiogram.fsm.state import State, StatesGroup
+from aiogram.fsm.context import FSMContext
+
+
+class AttachAccountStates(StatesGroup):
+    waiting_for_account_id = State()
+    waiting_for_user_id = State()
+
+
 class FarmBot:
     bot: Bot
     ws: BotWebSocket = BotWebSocket()
@@ -60,7 +69,7 @@ class FarmBot:
         await users_api.create_user(query.from_user.model_dump())
         return await query.message.answer(
             f"Wait...",
-            reply_markup=keyboards.waiting()
+            reply_markup=keyboards.waiting(),
         )
 
     @staticmethod
@@ -79,7 +88,7 @@ class FarmBot:
         if users := await users_api.get_users_to_approve():
             return await query.message.answer(
                 f"You can ban or approve user.",
-                reply_markup=keyboards.users_list(users)
+                reply_markup=keyboards.users_list(users),
             )
 
         await query.message.answer(
@@ -98,15 +107,54 @@ class FarmBot:
         return result
 
     @staticmethod
+    @dispatcher.callback_query(
+        lambda c: c.data.startswith("runner_attach_account_"))
+    @utils.authorize
+    @utils.admin_required
+    async def attach_account(query: types.CallbackQuery, state: FSMContext):
+        await query.message.answer("Enter account id to attach")
+        await state.set_state(AttachAccountStates.waiting_for_account_id)
+
+
+    @staticmethod
+    @dispatcher.message(AttachAccountStates.waiting_for_account_id)
+    async def process_account_id(message: types.Message, state: FSMContext):
+        account_id = message.text
+        await state.update_data(account_id=account_id)
+        await message.answer("Ok. Now enter user_id to attach this account.")
+        await state.set_state(AttachAccountStates.waiting_for_user_id)
+
+    @staticmethod
+    @dispatcher.message(AttachAccountStates.waiting_for_user_id)
+    async def process_user_id(message: types.Message, state: FSMContext):
+        user_id = message.text
+        data = await state.get_data()
+        account_id = data.get('account_id')
+        response = await users_api.attach_account(user_id, account_id)
+
+        await message.answer(f"{account_id=}\n{user_id=}\n{response=}")
+
+        await state.clear()
+
+    @staticmethod
     @dispatcher.callback_query(lambda c: c.data.startswith("runner_menu_"))
     @utils.authorize
-    async def approve_user(query: types.CallbackQuery):
-        user = await users_api.get_user(query.from_user.id)
+    async def runner_menu(query: types.CallbackQuery):
+        user_id = query.from_user.id
+        user = await users_api.get_user(user_id)
         slug = query.data.replace("runner_menu_", "")
 
         stat_data = await runners_api.get_stat(slug)
-        stat_message = '\n\n'.join([s["state"] for s in stat_data.values()])
+        if not stat_data:
+            return
 
+        if user.is_admin():
+            accounts = list(stat_data.values())
+        else:
+            accounts = [a for a in stat_data.values()
+                        if user_id == a["id"] or a["id"] in user.added_accounts]
+
+        stat_message = '\n\n'.join([s["state"] for s in accounts])
         logger_rn.info(f"Getting '{slug}' info")
         await query.message.answer(
             f"Menu of '{slug}\n\n{stat_message}",

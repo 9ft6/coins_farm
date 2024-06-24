@@ -49,11 +49,11 @@ class Users:
         records = self.db.all()
         for record in records:
             user = TelegramUser(**record)
-            self.items[user.id] = user
+            self.items[int(user.id)] = user
 
     def dump(self):
         self.db.truncate()
-        self.db.insert_multiple([user.model_dump() for user in self.items.values()])
+        self.db.insert_multiple([u.model_dump() for u in self.items.values()])
 
     def __setitem__(self, key: int, value: TelegramUser):
         self.items[key] = value
@@ -97,3 +97,12 @@ class Users:
     def get_users_to_approve(self) -> List[TelegramUser]:
         return [user for user in self.items.values()
                 if user.status == "wait_approve"]
+
+    def attach_account(self, user_id: int, account_id: int):
+        if user := self.items.get(user_id):
+            user.added_accounts.append(account_id)
+            self.dump()
+            return "Ok"
+
+        return "User not found"
+

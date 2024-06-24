@@ -13,4 +13,4 @@ def register_runners_api(app, Server):
     @app.post("/runner/{slug}/stat")
     async def put_stat(slug: str, stat: dict):
         logger.success(f"Put stat {slug} {stat}")
-        Server.set_stat(slug, stat["id"], stat)
+        Server.set_stat(slug, int(stat["id"]), stat)

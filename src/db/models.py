@@ -16,6 +16,7 @@ class TelegramUser(BaseModel):
     role: Role
     status: Status
     need_update_info: bool = False
+    added_accounts: list = []
 
     # tg fields
     first_name: str | None = None
@@ -27,16 +28,6 @@ class TelegramUser(BaseModel):
 
     def is_admin(self):
         return self.role == "admin"
-
-
-class UpdateTelegramUserRequest(BaseModel):
-    need_update_info: bool = False
-    first_name: str | None = None
-    last_name: str | None = None
-    language_code: str | None = None
-    username: str | None = None
-    is_premium: bool | None = None
-    is_bot: bool | None = None
 
 
 class ApprovedUser(TelegramUser):

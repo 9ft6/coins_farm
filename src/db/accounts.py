@@ -31,6 +31,3 @@ class Accounts(BaseDB):
         with file.open() as f:
             lines = [l.strip() for l in f.readlines() if l.strip()]
             return [t for t in lines if t.startswith("query_id=")]
-
-
-accounts = Accounts()
