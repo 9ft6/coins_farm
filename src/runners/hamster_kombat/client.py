@@ -87,7 +87,7 @@ class HamsterClient(BaseClient):
         upgrades_flag = utils.enable_emoji(self.cfg.auto_upgrade)
         view = (
             "<code>"
-            f"{level} {self.state.username()} {upgrades}\n"
+            f"{self.state.username():<16} {level} {upgrades}\n"
             f"{taps:<11} {balance:>8}$ {coins:<8} + {cph}/h {improved}\n"
             f"{combo_flag} combo {morse_flag} morse {task_flag} "
             f"tasks {upgrades_flag} upgrades: {depends_flag} depends"
