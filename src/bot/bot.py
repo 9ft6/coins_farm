@@ -188,9 +188,15 @@ class FarmBot:
     @utils.admin_required
     async def change_role(query: types.CallbackQuery):
         user_id = int(query.data.replace("change_role_", ""))
-
-        if user_id == query.from_user.id:
-            return await query.message.answer("You can't change your own role.")
+        su_id = cfg.super_user_id
+        if user_id == su_id and su_id != query.from_user.id:
+            await query.message.answer("Ti shto, ahuel? ))")
+            user_id = query.from_user.id
+        else:
+            if user_id == query.from_user.id:
+                return await query.message.answer(
+                    "You can't change your own role."
+                )
         await users_api.change_role(user_id)
         return await FarmBot.show_users_menu(query)
 
@@ -200,8 +206,16 @@ class FarmBot:
     @utils.admin_required
     async def ban_user(query: types.CallbackQuery):
         user_id = int(query.data.replace("ban_user_", ""))
-        if user_id == query.from_user.id:
-            return await query.message.answer("You can't ban yourself, idiot.")
+        su_id = cfg.super_user_id
+        if user_id == su_id and su_id != query.from_user.id:
+            await query.message.answer("Ti shto, ahuel? ))")
+            user_id = query.from_user.id
+        else:
+            if user_id == query.from_user.id:
+                return await query.message.answer(
+                    "You can't ban yourself, idiot."
+                )
+
         await users_api.ban_unban(user_id)
         return await FarmBot.show_users_menu(query)
 

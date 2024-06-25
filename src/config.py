@@ -23,6 +23,7 @@ class MainConfig(BaseSettings):
     sleep_time: tuple[int, int] = (100, 200)
 
     # Server
+    super_user_id: int = 0
     host: str = "127.0.0.1"
     port: int = 8000
     ws_runner_prefix: str = "/ws/runner"
