@@ -68,7 +68,8 @@ class FarmBot:
     @dispatcher.callback_query(F.data == "/start")
     @utils.authorize
     async def send_start(query: types.CallbackQuery):
-        await FarmBot.welcome(query.from_user.id, query)
+        await query.answer()
+        await FarmBot.welcome(query.from_user.id, query.message)
 
     @staticmethod
     async def welcome(user_id: int, message: types.Message):
@@ -100,8 +101,9 @@ class FarmBot:
     @dispatcher.callback_query(F.data == 'check_status')
     @utils.authorize
     async def check_status(query: types.CallbackQuery):
+        await query.answer("Checking status...")
         logger.info(f"Checking status of user {query.from_user.id}")
-        await FarmBot.welcome(query.from_user.id, query)
+        await FarmBot.welcome(query.from_user.id, query.message)
 
     @staticmethod
     @dispatcher.callback_query(F.data == 'approve_list')
@@ -125,10 +127,11 @@ class FarmBot:
     @utils.authorize
     @utils.admin_required
     async def approve_user(query: types.CallbackQuery):
+        await query.answer()
         user_id = int(query.data.replace("approve_user_", ""))
         result = await users_api.approve_user(user_id)
         logger.info(f"approve user {user_id} {result}")
-        await query.answer(f"approve user {user_id} {result}")
+        await query.message.answer(f"approve user {user_id} {result}")
 
     @staticmethod
     @dispatcher.callback_query(
@@ -136,9 +139,10 @@ class FarmBot:
     @utils.authorize
     @utils.admin_required
     async def attach_account(query: types.CallbackQuery, state: FSMContext):
+        await query.answer()
         slug = query.data.replace("runner_attach_account_", "")
         await state.update_data(slug=slug)
-        await query.answer("Enter account id to attach")
+        await query.message.answer("Enter account id to attach")
         await state.set_state(AttachAccountStates.waiting_for_account_id)
 
     @staticmethod
@@ -169,6 +173,7 @@ class FarmBot:
         lambda c: c.data.startswith("runner_add_account_"))
     @utils.authorize
     async def add_account(query: types.CallbackQuery):
+        await query.answer()
         img_url = ("https://github.com/9ft6/coins_farm/blob/"
                    "main/src/server/static/{}?raw=true")
         await query.message.answer_photo(
@@ -181,21 +186,22 @@ class FarmBot:
             photo=img_url.format("hamster_debugger.png"),
             caption=await runners_api.get_guide(slug)
         )
-        await query.answer("Enter account id to add.")
+        await query.message.answer("Enter account id to add.")
 
     @staticmethod
     @dispatcher.callback_query(lambda c: c.data.startswith("change_role_"))
     @utils.authorize
     @utils.admin_required
     async def change_role(query: types.CallbackQuery):
+        await query.answer()
         user_id = int(query.data.replace("change_role_", ""))
         su_id = cfg.super_user_id
         if user_id == su_id and su_id != query.from_user.id:
-            await query.answer("Ti shto, ahuel? ))")
+            await query.message.answer("Ti shto, ahuel? ))")
             user_id = query.from_user.id
         else:
             if user_id == query.from_user.id:
-                return await query.answer(
+                return await query.message.answer(
                     "You can't change your own role."
                 )
         await users_api.change_role(user_id)
@@ -206,14 +212,15 @@ class FarmBot:
     @utils.authorize
     @utils.admin_required
     async def ban_user(query: types.CallbackQuery):
+        await query.answer()
         user_id = int(query.data.replace("ban_user_", ""))
         su_id = cfg.super_user_id
         if user_id == su_id and su_id != query.from_user.id:
-            await query.answer("Ti shto, ahuel? ))")
+            await query.message.answer("Ti shto, ahuel? ))")
             user_id = query.from_user.id
         else:
             if user_id == query.from_user.id:
-                return await query.answer(
+                return await query.message.answer(
                     "You can't ban yourself, idiot."
                 )
 
@@ -225,23 +232,25 @@ class FarmBot:
     @utils.authorize
     @utils.admin_required
     async def user_info(query: types.CallbackQuery):
+        await query.answer()
         user_id = int(query.data.replace("user_info_", ""))
         user = await users_api.get_user(user_id)
         lines = [f"{k:<17} : {v}" for k, v in user.model_dump().items()]
         text = "\n".join(lines)
-        await query.answer(f"<code>{text}</code>")
+        await query.message.answer(f"<code>{text}</code>")
 
     @staticmethod
     @dispatcher.callback_query(F.data == "users_menu")
     @utils.authorize
     @utils.admin_required
     async def users_menu(query: types.CallbackQuery):
+        await query.answer()
         await FarmBot.show_users_menu(query)
 
     @staticmethod
     async def show_users_menu(query: types.CallbackQuery):
         users = await users_api.get_users()
-        await query.answer(
+        await query.message.answer(
             text=f"Last 50 users:",
             reply_markup=keyboards.user_menu(users),
         )
@@ -250,6 +259,7 @@ class FarmBot:
     @dispatcher.callback_query(lambda c: c.data.startswith("runner_menu_"))
     @utils.authorize
     async def runner_menu(query: types.CallbackQuery):
+        await query.answer()
         user_id = query.from_user.id
         slug = query.data.replace("runner_menu_", "")
         return await FarmBot.show_runner_menu(slug, user_id, query.message)
