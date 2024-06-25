@@ -184,14 +184,14 @@ class BasePanel:
         if self.cursor == -1:
             self.map(func, *args, **kwargs)
         else:
-            client = self.runner.clients[self.cursor]
+            client = self.runner.get_client_by_num(self.cursor)
             getattr(client, func)(*args, **kwargs)
 
     async def async_exec(self, coro, *args, **kwargs):
         if self.cursor == -1:
             await self.async_map(coro, *args, **kwargs)
         else:
-            client = self.runner.clients[self.cursor]
+            client = self.runner.get_client_by_num(self.cursor)
             await getattr(client, coro)(*args, **kwargs)
 
     def switch_cfg_to_clients(self, name):

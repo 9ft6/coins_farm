@@ -25,6 +25,18 @@ def register_users_api(app, Server):
             return user
         return Response("User not found", 404)
 
+    @app.post("/users/{user_id}/change_role/")
+    async def change_role(user_id: int):
+        return Server.users.change_role(user_id)
+
+    @app.post("/users/{user_id}/ban_unban/")
+    async def ban_unban(user_id: int):
+        return Server.users.ban_unban(user_id)
+
+    @app.get("/users/")
+    async def read_user():
+        return Server.users.get_users()
+
     @app.put("/users/{user_id}")
     async def update_user(user_id: int, request: UpdateTelegramUserRequest):
         user = Server.users.update(user_id, request.model_dump())

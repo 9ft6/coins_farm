@@ -2,6 +2,7 @@ from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from db.models import TelegramUser
+from core import utils
 
 
 def start_btn():
@@ -45,6 +46,10 @@ def home(is_admin: bool):
         builder.row(InlineKeyboardButton(
             text="Approve users",
             callback_data="approve_list"
+        ))
+        builder.row(InlineKeyboardButton(
+            text=f"Users",
+            callback_data=f"users_menu"
         ))
     return builder.as_markup()
 
@@ -95,3 +100,23 @@ def runner_menu(slug: str, is_admin: bool):
             callback_data=f"runner_stop_start_{slug}"
         ))
     return builder.as_markup()
+
+
+def user_menu(users: list[TelegramUser]):
+    builder = InlineKeyboardBuilder()
+    for user in users:
+        is_admin = f"admin: {utils.enable_emoji(user.is_admin())}"
+        is_ban = f"ban: {utils.enable_emoji(user.status == 'declined')}"
+        username = user.username or user.first_name or user.last_name or "username"
+        builder.row(InlineKeyboardButton(
+            text=f"{username} {user.id}",
+            callback_data=f"user_info_{user.id}"
+        ), InlineKeyboardButton(
+            text=is_admin,
+            callback_data=f"change_role_{user.id}"
+        ), InlineKeyboardButton(
+            text=is_ban,
+            callback_data=f"ban_user_{user.id}"
+        ))
+    return builder.as_markup()
+

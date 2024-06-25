@@ -65,6 +65,9 @@ class Users:
     def __contains__(self, key: int) -> bool:
         return key in self.items
 
+    def get_users(self) -> List[TelegramUser]:
+        return list(self.items.values())[:50]
+
     def create(self, user_data: Dict[str, Any]) -> TelegramUser:
         user = self.items.get(user_data["id"])
         if user:
@@ -84,12 +87,33 @@ class Users:
             self.dump()
             return user
 
-    def approve_user(self, user_id: int) -> bool:
+    def approve_user(self,user_id: int) -> bool:
         return self.set_user_status(user_id, "approved")
 
-    def set_user_status(self, user_id: int, status: str) -> bool:
+    def change_role(self, user_id: int):
+        if user := self[user_id]:
+            role = "admin" if user.role == "user" else "user"
+            return self.set_user_role(user_id, role)
+
+        return "user not exists"
+
+    def ban_unban(self, user_id: int):
+        if (user := self[user_id]) and user.status != "wait_approve":
+            status = "declined" if user.status == "approved" else "approved"
+            return self.set_user_status(user_id, status)
+
+        return "user not exists or waiting approve"
+
+    def set_user_status(self, user_id: int, status: Status) -> bool:
         if (user := self[user_id]) and status in statuses:
             user.status = status
+            self.dump()
+            return True
+        return False
+
+    def set_user_role(self, user_id: int, role: Role) -> bool:
+        if (user := self[user_id]) and role in roles:
+            user.role = role
             self.dump()
             return True
         return False

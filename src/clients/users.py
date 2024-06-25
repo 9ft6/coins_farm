@@ -20,6 +20,11 @@ class Users(BaseAPIClient):
         if status == 200:
             return TelegramUser(**body)
 
+    async def get_users(self):
+        body, status = await self.get(f"{self.base_url}/")
+        if status == 200:
+            return [TelegramUser(**u) for u in body]
+
     async def update_user(self, user: dict):
         url = f"{self.base_url}/{user['id']}"
         body, status = await self.put(url, json=user)
@@ -31,6 +36,16 @@ class Users(BaseAPIClient):
 
     async def approve_user(self, user_id: int):
         url = f"{self.base_url}/approve/{user_id}"
+        body, status = await self.post(url)
+        return body
+
+    async def change_role(self, user_id: int):
+        url = f"{self.base_url}/{user_id}/change_role/"
+        body, status = await self.post(url)
+        return body
+
+    async def ban_unban(self, user_id: int):
+        url = f"{self.base_url}/{user_id}/ban_unban/"
         body, status = await self.post(url)
         return body
 

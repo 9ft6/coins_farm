@@ -38,8 +38,11 @@ class ConsoleControlPanel(BasePanel):
 
     @input_wrapper
     async def ask_combo(self):
-        d = self.clients[0].state.data
-        if (c := d.get("clickerConfig")) and (upgrades := c.get("upgrades")):
+        any_client = self.runner.clients[list(self.runner.clients.keys())[0]]
+        d = any_client.state.data
+        print(d.keys())
+        print("clickerConfig upgrades")
+        if (c := d.get("clickerConfig")) and (upgrades := c.get("upgradesForBuy")):
             data = {}
             for upgrade in upgrades:
                 if (section := upgrade.get("section")) not in data:

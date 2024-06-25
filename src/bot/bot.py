@@ -14,10 +14,26 @@ from bot import keyboards, utils
 dispatcher: Dispatcher = Dispatcher()
 logger = SubLogger("TGBot")
 logger_rn = SubLogger("runner")
-
+static = f"https://github.com/9ft6/coins_farm/blob/main/src/server"
 
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
+
+
+base_guide_en = '''
+<b>Step 1: Install and configure Telegram</b>
+
+1. Download and install the official Telegram app on your computer. <a href="https://desktop.telegram.org/">Download Telegram for PC</a>.
+2. Launch the application and log in.
+3. Go to <b>Settings</b> - <b>Advanced Settings</b> - <b>Experimental Features</b>.
+'''
+base_guide = '''
+<b>Шаг 1: Установка и настройка Telegram</b>
+
+1. Скачайте и установите официальное приложение Telegram на ваш компьютер. <a href="https://desktop.telegram.org/">Скачать Telegram для ПК</a>.
+2. Запустите приложение и авторизуйтесь.
+3. Перейдите в раздел <b>Настройки</b> - <b>Продвинутые настройки</b> - <b>Экспериментальные настройки</b>.
+'''
 
 
 class AttachAccountStates(StatesGroup):
@@ -153,14 +169,67 @@ class FarmBot:
         lambda c: c.data.startswith("runner_add_account_"))
     @utils.authorize
     async def add_account(query: types.CallbackQuery):
+        img_url = ("https://github.com/9ft6/coins_farm/blob/"
+                   "main/src/server/static/{}?raw=true")
         await query.message.answer_photo(
-            photo="http://127.0.0.1:8000/static/tg_settings.png",
-            caption="Настройки Telegram"
+            photo=img_url.format("tg_settings.png"),
+            caption=base_guide
         )
 
         slug = query.data.replace("runner_add_account_", "")
-        result = await runners_api.get_guide(slug)
-        return query.message.answer(str(result))
+        await query.message.answer_photo(
+            photo=img_url.format("hamster_debugger.png"),
+            caption=await runners_api.get_guide(slug)
+        )
+
+    @staticmethod
+    @dispatcher.callback_query(lambda c: c.data.startswith("change_role_"))
+    @utils.authorize
+    @utils.admin_required
+    async def change_role(query: types.CallbackQuery):
+        user_id = int(query.data.replace("change_role_", ""))
+
+        if user_id == query.from_user.id:
+            return await query.message.answer("You can't change your own role.")
+        await users_api.change_role(user_id)
+        return await FarmBot.show_users_menu(query)
+
+    @staticmethod
+    @dispatcher.callback_query(lambda c: c.data.startswith("ban_user_"))
+    @utils.authorize
+    @utils.admin_required
+    async def ban_user(query: types.CallbackQuery):
+        user_id = int(query.data.replace("ban_user_", ""))
+        if user_id == query.from_user.id:
+            return await query.message.answer("You can't ban yourself, idiot.")
+        await users_api.ban_unban(user_id)
+        return await FarmBot.show_users_menu(query)
+
+    @staticmethod
+    @dispatcher.callback_query(lambda c: c.data.startswith("user_info_"))
+    @utils.authorize
+    @utils.admin_required
+    async def user_info(query: types.CallbackQuery):
+        user_id = int(query.data.replace("user_info_", ""))
+        user = await users_api.get_user(user_id)
+        lines = [f"{k:<17} : {v}" for k, v in user.model_dump().items()]
+        text = "\n".join(lines)
+        await query.message.answer(f"<code>{text}</code>")
+
+    @staticmethod
+    @dispatcher.callback_query(F.data == "users_menu")
+    @utils.authorize
+    @utils.admin_required
+    async def users_menu(query: types.CallbackQuery):
+        return await FarmBot.show_users_menu(query)
+
+    @staticmethod
+    async def show_users_menu(query: types.CallbackQuery):
+        users = await users_api.get_users()
+        return await query.message.answer(
+            text=f"Last 50 users:",
+            reply_markup=keyboards.user_menu(users),
+        )
 
     @staticmethod
     @dispatcher.callback_query(lambda c: c.data.startswith("runner_menu_"))
