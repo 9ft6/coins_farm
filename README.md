@@ -1,3 +1,7 @@
+
+**NOTE! This project is currently being developed in a private repository. Farm Commander is online here [@FarmCommanderBot](https://t.me/FarmCommanderBot), but requires approval. If you are interested and want to see the sources or work with the service, please text me on Telegram: [@dev9ft6](https://t.me/dev9ft6)**
+
+
 <p align="center">
   <img src="https://github.com/9ft6/hamster_farm/raw/media/pics/cui.png" alt="User Interface">
 </p>
@@ -6,8 +10,6 @@
 </p>
 
 ## Project Overview
-
-**This project now is developing in private repository. Farm commander is online here [@FarmCommanderBot](https://t.me/FarmCommanderBot), but require approve. If you intrested and want to see sources or work with service please text me in telegram. [@dev9ft6]([https://t.me/FarmCommanderBot](https://t.me/dev9ft6)) **
 
 This project started as an evening coding session over a beer to explore the mechanics of the hyped-up "Hamster Kombat." Now, it's an attempt to create a unified farm for similar projects. To work with it, you need to run the local server and bot modules located in `src/services`. Each module is essentially an API client with logic for auto-leveling, implementing useful functions, and displaying information in the terminal. Currently, there is a Telegram bot that allows users to verify themselves and administrators to approve user participation in the system. The bot supports hot account additions without needing to restart the runners. The system architecture is now microservice-based and includes the following components:
 
