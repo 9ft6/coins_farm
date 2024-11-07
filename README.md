@@ -1,5 +1,9 @@
 
-**NOTE! This project is currently being developed in a private repository. Farm Commander is online here [@FarmCommanderBot](https://t.me/FarmCommanderBot), but requires approval. If you are interested and want to see the sources or work with the service, please text me on Telegram: [@dev9ft6](https://t.me/dev9ft6)**
+
+**NOTE!** This project was initially conceived as a proof of concept and can be considered the MVP-1 of what has now become a full-scale project. Currently, MVP-2 has been completed, and you can learn more about it at the following link: [link](https://github.com/9ft6/coins-farm-mvp-2). Feel free to join our developer [chat](https://t.me/CoinsFarmDevChat) as well, or right me directly: [@dev9ft6](https://t.me/dev9ft6).
+
+**ЗАМЕЧАНИЕ!** Этот проект изначально задумывался как proof of concept и можно считать его MVP-1 того, во что он сейчас развился. В настоящее время завершен MVP-2, ознакомиться с которым подробнее можно по ссылке: [link](https://github.com/9ft6/coins-farm-mvp-2). Присоединяйтесь также к нашему [чату](https://t.me/CoinsFarmDevChat) разработчиков, или пишите мне напрямую: [@dev9ft6](https://t.me/dev9ft6).
+
 
 
 <p align="center">
