@@ -23,7 +23,7 @@ This project started as an evening coding session over a beer to explore the mec
 
 Implemented:
 - [Hamster Kombat](https://github.com/9ft6/hamster_farm/tree/main/src/runners/hamster_kombat/README.md)
-- [Bloom](https://github.com/9ft6/hamster_farm/tree/main/src/runners/bloom/README.md)
+- [blum](https://github.com/9ft6/hamster_farm/tree/main/src/runners/blum/README.md)
 
 ## Installation and Launch
 
@@ -49,7 +49,7 @@ add default user ids to data/users/admins or data/users/users
 3. **Settings**:
    1. add telegram bot token to ```env/.env``` as you can see in ```env/.env.example```
    2. add default user telegram ids to ```data/users/admins``` or ```data/users/users``` files
-   3. Create a directory named accounts/ in the root of the project and add files with game slugs (bloom, hamster_kombat). Learn more at game module pages.
+   3. Create a directory named accounts/ in the root of the project and add files with game slugs (blum, hamster_kombat). Learn more at game module pages.
    
 
 4. **Run the local account server in one terminal**:
@@ -64,7 +64,7 @@ add default user ids to data/users/admins or data/users/users
 
 6. **Run the local bots in different terminals**:
    ```bash
-   make run-bloom
+   make run-blum
    ```
    or
    ```bash
